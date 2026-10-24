@@ -11,16 +11,32 @@ export async function requestNotifications(): Promise<"granted" | "denied" | "un
   return result === "granted" ? "granted" : "denied";
 }
 
-export function showNotification(title: string, body: string): boolean {
-  if (typeof Notification === "undefined" || Notification.permission !== "granted") return false;
-  const notification = new Notification(title, {
+export async function showNotification(title: string, body: string): Promise<boolean> {
+  if (typeof window === "undefined" || typeof Notification === "undefined") return false;
+  if (Notification.permission !== "granted") return false;
+  const options: NotificationOptions = {
     body,
     icon: "/icons/icon-192.png",
     lang: "zh-Hant",
-  });
-  notification.onclick = () => {
-    window.focus();
-    notification.close();
   };
-  return true;
+  const worker = "serviceWorker" in navigator ? navigator.serviceWorker.controller : null;
+  if (worker) {
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      await registration.showNotification(title, options);
+      return true;
+    } catch {
+      /* The page Notification constructor is the fallback when the worker cannot show it. */
+    }
+  }
+  try {
+    const notification = new Notification(title, options);
+    notification.onclick = () => {
+      window.focus();
+      notification.close();
+    };
+    return true;
+  } catch {
+    return false;
+  }
 }

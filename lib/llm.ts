@@ -7,6 +7,7 @@ const LANG_NAME: Record<Lang, string> = {
   vi: "Vietnamese",
   fil: "Filipino (Tagalog)",
   th: "Thai",
+  en: "English",
 };
 
 const SYSTEM = `You transcribe and translate a Taiwan medicine bag (藥袋). Return one JSON object and nothing else.

@@ -6,6 +6,7 @@ const TAGS: Record<Lang, string[]> = {
   vi: ["vi-VN", "vi"],
   fil: ["fil-PH", "fil", "tl-PH", "tl"],
   th: ["th-TH", "th"],
+  en: ["en-US", "en-GB", "en"],
 };
 
 function loadVoices(): Promise<SpeechSynthesisVoice[]> {
@@ -37,19 +38,16 @@ export function stopSpeaking(): void {
   window.speechSynthesis.cancel();
 }
 
-export async function speak(text: string, lang: Lang): Promise<"ok" | "unavailable"> {
+export async function speak(text: string, lang: Lang): Promise<"ok" | "unavailable" | "no-voice"> {
   if (typeof window === "undefined" || !window.speechSynthesis || !text.trim()) {
     return "unavailable";
   }
   const voices = await loadVoices();
-  const utterance = new SpeechSynthesisUtterance(text);
   const voice = matchVoice(voices, lang);
-  if (voice) {
-    utterance.voice = voice;
-    utterance.lang = voice.lang;
-  } else {
-    utterance.lang = TAGS[lang][0] ?? "zh-TW";
-  }
+  if (!voice) return "no-voice";
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.voice = voice;
+  utterance.lang = voice.lang;
   utterance.rate = lang === "th" ? 0.9 : 0.96;
   window.speechSynthesis.cancel();
   window.speechSynthesis.resume();

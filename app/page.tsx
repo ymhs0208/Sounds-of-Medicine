@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { Disclaimer } from "@/components/disclaimer";
 import { LanguagePicker } from "@/components/language-picker";
 import { Logo } from "@/components/logo";
 import { ui } from "@/lib/i18n";
@@ -15,6 +16,8 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [selected, setSelected] = useState<Lang | null>(null);
   const [consent, setConsent] = useState(false);
+  const [patientName, setPatientName] = useState("");
+  const [familyContact, setFamilyContact] = useState("");
   const t = ui[selected ?? "zh"];
 
   useEffect(() => {
@@ -29,7 +32,7 @@ export default function OnboardingPage() {
     );
   }
 
-  const ready = Boolean(selected) && consent;
+  const ready = Boolean(selected) && consent && patientName.trim().length > 0 && familyContact.trim().length > 0;
 
   return (
     <div className="flex min-h-full flex-col">
@@ -40,6 +43,26 @@ export default function OnboardingPage() {
         <p className="mt-3 max-w-[18rem] text-lg leading-snug">{t.tagline}</p>
       </div>
       <div className="flex flex-1 flex-col gap-5 px-4 py-5">
+        <section className="space-y-3">
+          <label className="block text-sm font-semibold text-pine">
+            {t.patientNameField}
+            <input
+              className="mt-1 w-full rounded-2xl border border-border bg-card px-3 py-3 text-base"
+              value={patientName}
+              onChange={(event) => setPatientName(event.target.value)}
+            />
+            <span className="mt-1 block text-sm font-normal text-muted-foreground">{t.patientNameHint}</span>
+          </label>
+          <label className="block text-sm font-semibold text-pine">
+            {t.familyContactField}
+            <input
+              className="mt-1 w-full rounded-2xl border border-border bg-card px-3 py-3 text-base"
+              value={familyContact}
+              onChange={(event) => setFamilyContact(event.target.value)}
+            />
+            <span className="mt-1 block text-sm font-normal text-muted-foreground">{t.familyContactHint}</span>
+          </label>
+        </section>
         <section>
           <h2 className="mb-2 text-sm font-semibold text-pine">{t.stepLanguage}</h2>
           <LanguagePicker value={selected} onChange={setSelected} />
@@ -57,16 +80,23 @@ export default function OnboardingPage() {
           </label>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t.consentDetail}</p>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.consentHint}</p>
+          <div className="mt-3">
+            <Disclaimer lang={selected ?? "zh"} />
+          </div>
         </section>
         <div className="mt-auto pt-2">
-          {!ready ? <p className="mb-2 text-center text-sm text-muted-foreground">{t.consentRequired}</p> : null}
+          {!ready ? <p className="mb-2 text-center text-sm text-muted-foreground">{t.onboardingMissing}</p> : null}
           <Button
             type="button"
             disabled={!ready}
             className="h-14 w-full rounded-2xl text-lg"
             onClick={() => {
               if (!selected || !consent) return;
-              store.completeOnboarding(selected);
+              store.completeOnboarding({
+                lang: selected,
+                patientName,
+                familyContact,
+              });
               router.push("/today");
             }}
           >

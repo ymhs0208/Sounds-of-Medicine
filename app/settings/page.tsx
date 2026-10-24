@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { LanguagePicker } from "@/components/language-picker";
@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { cabinetMode } from "@/lib/doses";
 import { fill, formatDateTime } from "@/lib/format";
 import { ui } from "@/lib/i18n";
 import { notificationSupport, requestNotifications } from "@/lib/notify";
@@ -25,6 +26,8 @@ export default function SettingsPage() {
   const t = ui[store.lang];
   const [llm, setLlm] = useState(false);
   const [open, setOpen] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const mode = cabinetMode(store.bags);
 
   useEffect(() => {
     if (staticDemo) return;
@@ -54,7 +57,7 @@ export default function SettingsPage() {
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           {staticDemo ? t.staticNoOcr : llm ? t.llmOnBody : t.llmOffBody}
         </p>
-        <p className="mt-2 text-sm font-semibold text-pine">{!staticDemo && llm ? t.llmMode : t.demoMode}</p>
+        <p className="mt-2 text-sm font-semibold text-pine">{staticDemo ? t.staticNoOcr : llm ? t.llmMode : t.manualEntry}</p>
       </section>
       <section className="rounded-3xl bg-card p-4 ring-1 ring-border">
         <h2 className="text-base font-semibold">{t.reminders}</h2>
@@ -70,28 +73,83 @@ export default function SettingsPage() {
           {notificationSupport() === "granted" ? t.remindersOn : t.enableReminders}
         </Button>
       </section>
-      <section className="rounded-3xl bg-card p-4 ring-1 ring-border">
-        <h2 className="text-base font-semibold">{t.loadDemo}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t.loadAllHint}</p>
+      <section className="rounded-3xl bg-amber-bg p-4 ring-1 ring-[#efd3a0]">
+        <h2 className="text-base font-semibold text-amber-ink">{t.demoTitle}</h2>
+        <p className="mt-1 text-sm leading-relaxed text-amber-ink">{t.demoBody}</p>
+        {mode === "demo" ? <p className="mt-2 text-sm font-semibold text-amber-ink">{t.demoOn}</p> : null}
+        {mode === "real" ? <p className="mt-2 text-sm leading-relaxed text-amber-ink">{t.demoBlockedReal}</p> : null}
         <Button
           type="button"
           className="mt-3 h-12 w-full rounded-2xl"
+          disabled={mode === "real"}
           onClick={() => {
-            store.addDemoSet();
+            const result = store.addDemoSet();
+            if (result === "mixed") {
+              toast(t.demoBlockedReal);
+              return;
+            }
             toast(t.demoLoaded);
             router.push("/today");
           }}
         >
           {t.loadAll}
         </Button>
+        {mode === "demo" ? (
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-2 h-12 w-full rounded-2xl"
+            onClick={() => {
+              store.clearDemo();
+              toast(t.demoCleared);
+            }}
+          >
+            {t.clearDemo}
+          </Button>
+        ) : null}
       </section>
       <section className="rounded-3xl bg-card p-4 ring-1 ring-border">
         <h2 className="text-base font-semibold">{t.dataTitle}</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.dataBody}</p>
+        {store.patientName ? <p className="mt-2 text-sm">{t.patientLabel}　{store.patientName}</p> : null}
+        {store.familyContact ? <p className="text-sm">{t.familyContactShow}　{store.familyContact}</p> : null}
         {store.consentAt ? (
           <p className="mt-2 text-sm">{fill(t.consentOn, { time: formatDateTime(store.consentAt, store.lang) })}</p>
         ) : null}
-        <Button type="button" variant="outline" className="mt-3 h-12 w-full rounded-2xl" onClick={() => setOpen(true)}>
+        <Button
+          type="button"
+          variant="outline"
+          className="mt-3 h-12 w-full rounded-2xl"
+          onClick={() => {
+            const blob = new Blob([JSON.stringify(store, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "yaosheng-backup.json";
+            link.click();
+            URL.revokeObjectURL(url);
+          }}
+        >
+          {t.exportJson}
+        </Button>
+        <Button type="button" variant="outline" className="mt-2 h-12 w-full rounded-2xl" onClick={() => fileRef.current?.click()}>
+          {t.importJson}
+        </Button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="application/json"
+          className="hidden"
+          onChange={async (event) => {
+            const file = event.target.files?.[0];
+            event.target.value = "";
+            if (!file) return;
+            const text = await file.text();
+            const result = store.importBackup(text);
+            toast(result === "ok" ? t.imported : t.importInvalid);
+          }}
+        />
+        <Button type="button" variant="outline" className="mt-2 h-12 w-full rounded-2xl" onClick={() => setOpen(true)}>
           {t.clear}
         </Button>
       </section>

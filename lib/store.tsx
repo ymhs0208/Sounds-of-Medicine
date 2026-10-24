@@ -9,12 +9,15 @@ import {
   useRef,
   useState,
 } from "react";
-import { allDemoBags, getDemoBag, isDemoKey } from "./demo-data";
+import { EMPTY_DATA, normalizeData, parseBackup } from "./backup";
+import { allDemoBags } from "./demo-data";
+import { admitBag, applyDose } from "./doses";
 import { uid } from "./id";
 import { todayISO } from "./format";
 import type {
   AppData,
   Bag,
+  DoseNotice,
   DoseStatus,
   Lang,
   Observation,
@@ -25,27 +28,21 @@ import type { Slot } from "./slots";
 
 const STORAGE_KEY = "yaosheng.v1";
 
-const EMPTY: AppData = {
-  version: 1,
-  onboarded: false,
-  lang: "zh",
-  consentAt: null,
-  bags: [],
-  logs: [],
-  reports: [],
-};
-
 type Store = AppData & {
   ready: boolean;
-  completeOnboarding: (lang: Lang) => void;
+  completeOnboarding: (input: { lang: Lang; patientName: string; familyContact: string }) => void;
   setLang: (lang: Lang) => void;
-  addBag: (bag: Bag) => "ok" | "duplicate";
-  addDemoSet: () => void;
+  addBag: (bag: Bag) => "ok" | "duplicate" | "mixed";
+  updateBag: (bag: Bag) => "ok" | "mixed" | "missing";
+  addDemoSet: () => "ok" | "mixed";
+  clearDemo: () => void;
   removeBag: (bagId: string) => void;
   setDose: (drugId: string, slot: Slot, status: DoseStatus | null, date?: string) => void;
+  markNotified: (notices: DoseNotice[]) => void;
   addObservation: (input: { drugId: string; slot?: Slot; observation: Observation }) => void;
   addReply: (reportId: string, template: ReplyTemplate) => void;
   markRepliesSeen: () => void;
+  importBackup: (raw: string) => "ok" | "invalid";
   clearAll: () => void;
 };
 
@@ -54,17 +51,36 @@ const Ctx = createContext<Store | null>(null);
 function load(): AppData {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return EMPTY;
-    const parsed = JSON.parse(raw) as AppData;
-    if (parsed.version !== 1 || !Array.isArray(parsed.bags)) return EMPTY;
-    return { ...EMPTY, ...parsed, version: 1 };
+    if (!raw) return EMPTY_DATA;
+    return normalizeData(JSON.parse(raw) as AppData);
   } catch {
-    return EMPTY;
+    return EMPTY_DATA;
+  }
+}
+
+function persist(data: AppData) {
+  const json = JSON.stringify(data);
+  try {
+    localStorage.setItem(STORAGE_KEY, json);
+  } catch {
+    const slim: AppData = {
+      ...data,
+      bags: data.bags.map((bag) => {
+        const next = { ...bag };
+        delete next.photoDataUrl;
+        return next;
+      }),
+    };
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
+    } catch {
+      /* Keep the in-memory copy if the browser quota is still full. */
+    }
   }
 }
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
-  const [data, setData] = useState<AppData>(EMPTY);
+  const [data, setData] = useState<AppData>(EMPTY_DATA);
   const [ready, setReady] = useState(false);
   const ref = useRef(data);
   ref.current = data;
@@ -76,35 +92,71 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!ready) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    persist(data);
   }, [data, ready]);
 
-  const completeOnboarding = useCallback((lang: Lang) => {
-    setData((current) => ({
-      ...current,
-      onboarded: true,
-      lang,
-      consentAt: new Date().toISOString(),
-    }));
-  }, []);
+  const completeOnboarding = useCallback(
+    (input: { lang: Lang; patientName: string; familyContact: string }) => {
+      setData((current) => ({
+        ...current,
+        onboarded: true,
+        lang: input.lang,
+        patientName: input.patientName.trim(),
+        familyContact: input.familyContact.trim(),
+        consentAt: new Date().toISOString(),
+      }));
+    },
+    [],
+  );
 
   const setLang = useCallback((lang: Lang) => {
     setData((current) => ({ ...current, lang }));
   }, []);
 
-  const addBag = useCallback((bag: Bag): "ok" | "duplicate" => {
+  const addBag = useCallback((bag: Bag): "ok" | "duplicate" | "mixed" => {
     if (bag.demoKey && ref.current.bags.some((item) => item.demoKey === bag.demoKey)) {
       return "duplicate";
     }
+    if (admitBag(ref.current.bags, bag.source) === "mixed") return "mixed";
     setData((current) => ({ ...current, bags: [...current.bags, bag] }));
     return "ok";
   }, []);
 
-  const addDemoSet = useCallback(() => {
+  const updateBag = useCallback((bag: Bag): "ok" | "mixed" | "missing" => {
+    const existing = ref.current.bags.find((item) => item.id === bag.id);
+    if (!existing) return "missing";
+    if (existing.source !== bag.source && admitBag(ref.current.bags.filter((item) => item.id !== bag.id), bag.source) === "mixed") {
+      return "mixed";
+    }
+    setData((current) => ({
+      ...current,
+      bags: current.bags.map((item) => (item.id === bag.id ? bag : item)),
+    }));
+    return "ok";
+  }, []);
+
+  const addDemoSet = useCallback((): "ok" | "mixed" => {
+    if (admitBag(ref.current.bags, "demo") === "mixed") return "mixed";
     setData((current) => {
       const present = new Set(current.bags.map((bag) => bag.demoKey));
       const more = allDemoBags().filter((bag) => !present.has(bag.demoKey));
       return { ...current, bags: [...current.bags, ...more] };
+    });
+    return "ok";
+  }, []);
+
+  const clearDemo = useCallback(() => {
+    setData((current) => {
+      const demoIds = new Set(
+        current.bags.filter((bag) => bag.source === "demo").flatMap((bag) => bag.drugs.map((drug) => drug.id)),
+      );
+      return {
+        ...current,
+        bags: current.bags.filter((bag) => bag.source !== "demo"),
+        logs: current.logs.filter((log) => !demoIds.has(log.drugId)),
+        reports: current.reports.filter((report) => !demoIds.has(report.drugId)),
+        notified: current.notified.filter((notice) => !demoIds.has(notice.drugId)),
+      };
     });
   }, []);
 
@@ -117,44 +169,31 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         bags: current.bags.filter((item) => item.id !== bagId),
         logs: current.logs.filter((log) => !ids.has(log.drugId)),
         reports: current.reports.filter((report) => !ids.has(report.drugId)),
+        notified: current.notified.filter((notice) => !ids.has(notice.drugId)),
       };
     });
   }, []);
 
   const setDose = useCallback((drugId: string, slot: Slot, status: DoseStatus | null, date?: string) => {
     const day = date ?? todayISO();
+    setData((current) =>
+      applyDose(current, {
+        drugId,
+        slot,
+        status,
+        date: day,
+        at: new Date().toISOString(),
+        reportId: uid(),
+      }),
+    );
+  }, []);
+
+  const markNotified = useCallback((notices: DoseNotice[]) => {
     setData((current) => {
-      const logs = current.logs.filter(
-        (log) => !(log.drugId === drugId && log.date === day && log.slot === slot),
-      );
-      const reports = current.reports.filter(
-        (report) =>
-          !(
-            report.source === "timeline" &&
-            report.drugId === drugId &&
-            report.date === day &&
-            report.slot === slot
-          ),
-      );
-      if (!status) return { ...current, logs, reports };
-      const at = new Date().toISOString();
-      return {
-        ...current,
-        logs: [...logs, { drugId, date: day, slot, status, at }],
-        reports: [
-          ...reports,
-          {
-            id: uid(),
-            at,
-            date: day,
-            kind: status,
-            drugId,
-            slot,
-            source: "timeline",
-            replies: [],
-          },
-        ],
-      };
+      const have = new Set(current.notified.map((notice) => `${notice.date}|${notice.drugId}|${notice.slot}`));
+      const more = notices.filter((notice) => !have.has(`${notice.date}|${notice.drugId}|${notice.slot}`));
+      if (!more.length) return current;
+      return { ...current, notified: [...current.notified, ...more] };
     });
   }, []);
 
@@ -203,9 +242,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
+  const importBackup = useCallback((raw: string): "ok" | "invalid" => {
+    const parsed = parseBackup(raw);
+    if (!parsed) return "invalid";
+    setData(parsed);
+    return "ok";
+  }, []);
+
   const clearAll = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
-    setData(EMPTY);
+    setData(EMPTY_DATA);
   }, []);
 
   const value = useMemo<Store>(
@@ -215,12 +261,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       completeOnboarding,
       setLang,
       addBag,
+      updateBag,
       addDemoSet,
+      clearDemo,
       removeBag,
       setDose,
+      markNotified,
       addObservation,
       addReply,
       markRepliesSeen,
+      importBackup,
       clearAll,
     }),
     [
@@ -229,12 +279,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       completeOnboarding,
       setLang,
       addBag,
+      updateBag,
       addDemoSet,
+      clearDemo,
       removeBag,
       setDose,
+      markNotified,
       addObservation,
       addReply,
       markRepliesSeen,
+      importBackup,
       clearAll,
     ],
   );
@@ -246,9 +300,4 @@ export function useStore(): Store {
   const value = useContext(Ctx);
   if (!value) throw new Error("useStore outside provider");
   return value;
-}
-
-export function bagFromDemoKey(key: string): Bag | null {
-  if (!isDemoKey(key)) return null;
-  return getDemoBag(key);
 }

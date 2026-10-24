@@ -23,6 +23,7 @@ export default function ScanPage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [llm, setLlm] = useState(false);
+  const [problem, setProblem] = useState<"no_key" | "fail" | null>(null);
 
   useEffect(() => {
     if (staticDemo) return;
@@ -46,6 +47,7 @@ export default function ScanPage() {
       return;
     }
     setBusy("photo");
+    setProblem(null);
     try {
       const imageDataUrl = await compressImage(file);
       const response = await fetch("/api/extract", {
@@ -55,21 +57,24 @@ export default function ScanPage() {
       });
       const body = (await response.json()) as { error?: string; extraction?: Extraction };
       if (body.error === "no_key" || response.status === 503) {
-        toast(t.noKey);
+        setProblem("no_key");
         return;
       }
       if (!response.ok || !body.extraction) {
+        setProblem("fail");
         toast(body.error === "unreadable" ? t.unreadable : t.extractFail);
         return;
       }
       const bag = bagFromExtraction(body.extraction, imageDataUrl, store.lang);
       if (!bag.drugs.length && !bag.patientZh) {
+        setProblem("fail");
         toast(t.unreadable);
         return;
       }
       setPending({ kind: "extract", bag });
       router.push("/review");
     } catch {
+      setProblem("fail");
       toast(t.photoUnsupported);
     } finally {
       setBusy(null);
@@ -79,7 +84,7 @@ export default function ScanPage() {
   return (
     <div className="space-y-4 pb-6">
       <div>
-        <p className="text-sm font-semibold text-pine">{llm ? t.llmMode : t.demoMode}</p>
+        <p className="text-sm font-semibold text-pine">{staticDemo ? t.demoMode : llm ? t.llmMode : t.manualEntry}</p>
         <h1 className="text-3xl font-semibold">{t.scanTitle}</h1>
         <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.scanLead}</p>
       </div>
@@ -113,6 +118,19 @@ export default function ScanPage() {
         className="hidden"
         onChange={(event) => onFile(event.target.files?.[0])}
       />
+      {problem ? (
+        <div className="rounded-3xl bg-amber-bg p-4 text-amber-ink">
+          <p className="text-base font-semibold leading-relaxed">{problem === "no_key" ? t.noKey : t.extractFail}</p>
+          <Button type="button" className="mt-3 h-12 w-full rounded-2xl" onClick={() => router.push("/meds/edit")}>
+            {t.manualEntry}
+          </Button>
+        </div>
+      ) : null}
+      <Button type="button" variant="outline" className="h-12 w-full rounded-2xl text-base" onClick={() => router.push("/meds/edit")}>
+        {t.manualEntry}
+      </Button>
+      {staticDemo ? (
+        <>
       <h2 className="pt-2 text-sm font-semibold text-pine">{t.orSamples}</h2>
       <div className="space-y-3">
         {DEMO_ORDER.map((key) => {
@@ -139,6 +157,8 @@ export default function ScanPage() {
           );
         })}
       </div>
+        </>
+      ) : null}
       {busy ? (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-[#1c1915]/45 p-4">
           <div className="w-full max-w-sm rounded-3xl bg-card p-5 text-center">

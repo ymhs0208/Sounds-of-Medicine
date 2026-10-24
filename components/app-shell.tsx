@@ -24,20 +24,19 @@ function JudgeRail() {
   return (
     <aside className="no-print hidden px-2 pt-10 text-[#2b241c] lg:block">
       <Logo className="size-12" />
-      <p className="mt-4 text-sm font-semibold tracking-wide text-pine">社企提案示範</p>
+      <p className="mt-4 text-sm font-semibold tracking-wide text-pine">藥袋語音助手</p>
       <h1 className="mt-1 text-3xl font-semibold leading-tight">藥聲</h1>
       <p className="mt-2 text-base leading-relaxed">
         外籍看護的藥袋語音助手。只翻譯並朗讀藥袋上的字，不另外給醫療建議。
       </p>
       <ol className="mt-6 space-y-3 text-sm leading-relaxed">
-        <li>1. 選照顧者的語言，勾選家屬同意。</li>
-        <li>2. 掃描示範藥袋，中文與譯文並列。</li>
-        <li>3. 藥卡可朗讀用法與警語。</li>
-        <li>4. 今天的時間軸記錄已餵藥或漏吃。</li>
-        <li>5. 兩家都有 amlodipine 時，只顯示「請詢問藥師」。</li>
-        <li>6. 家屬頁是繁體中文，可列印就醫摘要。</li>
+        <li>1. 填被照顧者姓名、家屬聯絡方式，選語言，勾選同意。</li>
+        <li>2. 拍真正的藥袋，或手動把藥袋上的字打進去，核對後再存。</li>
+        <li>3. 今天的時間軸記錄已餵藥或漏吃。開著畫面才會提醒。</li>
+        <li>4. 兩包藥成分相同時，只顯示「請詢問藥師」。</li>
+        <li>5. 家屬頁是繁體中文，可看服用紀錄並列印摘要。</li>
       </ol>
-      <p className="mt-6 text-sm text-[#5c5346]">沒有 API 金鑰也能走完。詳見 README 的評審腳本。</p>
+      <p className="mt-6 text-sm text-[#5c5346]">設定裡的「試用示範資料」是虛構藥袋，不會和真實藥袋混在一起。</p>
     </aside>
   );
 }

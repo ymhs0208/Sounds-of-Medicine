@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { AdherenceCard } from "@/components/adherence-card";
 import { Button } from "@/components/ui/button";
 import { reportSentence, observationLabel, replyLabel } from "@/lib/copy";
 import { drugText, formatDateTime } from "@/lib/format";
@@ -59,6 +60,7 @@ export default function ReportPage() {
         <h1 className="text-3xl font-semibold">{t.reportTitle}</h1>
         <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.reportLead}</p>
       </div>
+      <AdherenceCard lang={lang} />
       {drugs.length === 0 ? (
         <p className="rounded-3xl bg-card px-4 py-6 ring-1 ring-border">{t.noMeds}</p>
       ) : (

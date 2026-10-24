@@ -8,7 +8,7 @@ export function isDemoKey(value: string): value is DemoKey {
   return (DEMO_ORDER as readonly string[]).includes(value);
 }
 
-type L4 = Exclude<Lang, "zh">;
+type L4 = "id" | "vi" | "fil" | "th";
 
 const text = (
   id: DrugText,
@@ -284,6 +284,7 @@ export const DEMO_CAPTION: Record<DemoKey, Record<Lang, string>> = {
     vi: "Thuốc huyết áp · sau bữa sáng",
     fil: "Gamot sa presyon · pagkatapos ng almusal",
     th: "ยาความดัน · หลังอาหารเช้า",
+    en: "Blood pressure · after breakfast",
   },
   tpech: {
     zh: "降血糖 · 早晚飯後",
@@ -291,6 +292,7 @@ export const DEMO_CAPTION: Record<DemoKey, Record<Lang, string>> = {
     vi: "Thuốc đường huyết · sau sáng và tối",
     fil: "Gamot sa asukal · pagkatapos ng almusal at hapunan",
     th: "ยาเบาหวาน · หลังอาหารเช้าและเย็น",
+    en: "Blood sugar · after breakfast and dinner",
   },
   femh: {
     zh: "抗凝血 · 早晚各一次",
@@ -298,6 +300,7 @@ export const DEMO_CAPTION: Record<DemoKey, Record<Lang, string>> = {
     vi: "Chống đông · sáng và tối",
     fil: "Pang-iwas sa pamumuo · umaga at gabi",
     th: "ยาต้านการแข็งตัวของเลือด · เช้าและเย็น",
+    en: "Anticoagulant · morning and evening",
   },
   daan: {
     zh: "降血壓 · 另一家藥局",
@@ -305,6 +308,7 @@ export const DEMO_CAPTION: Record<DemoKey, Record<Lang, string>> = {
     vi: "Thuốc huyết áp · nhà thuốc khác",
     fil: "Gamot sa presyon · ibang botika",
     th: "ยาความดัน · อีกร้านยา",
+    en: "Blood pressure · another pharmacy",
   },
 };
 

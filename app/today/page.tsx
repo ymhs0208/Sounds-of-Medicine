@@ -21,7 +21,7 @@ export default function TodayPage() {
   const items = buildTimeline(store.bags, store.logs, day);
   const groups = groupTimeline(items);
   const done = items.filter((item) => item.status !== "pending").length;
-  const name = patientName(store.bags);
+  const name = patientName(store.bags, store.patientName);
   const unseen = store.reports.some((report) => report.replies.some((reply) => !reply.seen));
   const now = new Date();
   const minute = now.getHours() * 60 + now.getMinutes();
@@ -113,7 +113,10 @@ export default function TodayPage() {
                               {store.lang !== "zh" ? (
                                 <p className="mt-1 text-sm text-[#3f382f]">{item.drug.nameZh}</p>
                               ) : null}
-                              <p className="mt-1 text-sm text-muted-foreground">{item.bag.hospitalShort}</p>
+                              <p className="mt-1 text-sm text-muted-foreground">
+                                {item.bag.hospitalShort}
+                                {item.bag.source === "demo" ? ` · ${t.demoBadge}` : ""}
+                              </p>
                             </div>
                             {item.duplicate ? (
                               <span className="shrink-0 rounded-full bg-amber-bg px-2 py-1 text-xs font-semibold text-amber-ink">
@@ -175,6 +178,7 @@ export default function TodayPage() {
           <section className="rounded-3xl bg-card p-4 ring-1 ring-border">
             <h2 className="text-base font-semibold">{t.reminders}</h2>
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.worksOffline}</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.notifLimit}</p>
             <div className="mt-3 grid gap-2">
               <Button type="button" variant="outline" className="h-12 rounded-2xl text-base" onClick={enable}>
                 {notificationSupport() === "granted" ? t.remindersOn : t.enableReminders}
@@ -194,18 +198,9 @@ export default function TodayPage() {
           <Button nativeButton={false} className="mt-4 h-14 w-full rounded-2xl text-lg" render={<Link href="/scan" />}>
             {t.navScan}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="mt-2 h-12 w-full rounded-2xl text-base"
-            onClick={() => {
-              store.addDemoSet();
-              toast(t.demoLoaded);
-            }}
-          >
-            {t.loadAll}
+          <Button nativeButton={false} variant="outline" className="mt-2 h-12 w-full rounded-2xl text-base" render={<Link href="/meds/edit" />}>
+            {t.manualEntry}
           </Button>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.loadAllHint}</p>
         </section>
       )}
     </div>

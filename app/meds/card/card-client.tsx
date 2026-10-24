@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { BagFace } from "@/components/bag-artwork";
@@ -62,8 +63,18 @@ export default function MedicineCardClient() {
           <p className="mt-2 text-sm text-muted-foreground">
             {bag.pharmacyZh} · {bag.dispensingLabel || rocLabel(bag.dispensingDate, "")}
           </p>
-          {duplicate ? (
-            <p className="mt-3 inline-flex rounded-full bg-amber-bg px-3 py-1 text-sm font-semibold text-amber-ink">{t.duplicateShort}</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {bag.source === "demo" ? (
+              <span className="inline-flex rounded-full bg-amber-bg px-3 py-1 text-sm font-semibold text-amber-ink">{t.demoBadge}</span>
+            ) : null}
+            {duplicate ? (
+              <span className="inline-flex rounded-full bg-amber-bg px-3 py-1 text-sm font-semibold text-amber-ink">{t.duplicateShort}</span>
+            ) : null}
+          </div>
+          {bag.source !== "demo" ? (
+            <Button nativeButton={false} variant="outline" className="mt-3 h-11 rounded-2xl" render={<Link href={`/meds/edit?bag=${bag.id}`} />}>
+              {t.editBag}
+            </Button>
           ) : null}
         </div>
       </div>

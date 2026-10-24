@@ -1,18 +1,20 @@
 import type { Lang } from "../types";
 import type { Slot } from "../slots";
+import { en } from "./en";
 import { fil } from "./fil";
 import { id } from "./id";
 import { th } from "./th";
 import { vi } from "./vi";
 import { zh, type UiPack } from "./zh";
 
-export const ui: Record<Lang, UiPack> = { zh, id, vi, fil, th };
+export const ui: Record<Lang, UiPack> = { zh, id, vi, fil, th, en };
 
 export const LANG_OPTIONS: { id: Lang; native: string; zh: string }[] = [
   { id: "id", native: "Bahasa Indonesia", zh: "印尼語" },
   { id: "vi", native: "Tiếng Việt", zh: "越南語" },
   { id: "fil", native: "Filipino", zh: "菲律賓語" },
   { id: "th", native: "ภาษาไทย", zh: "泰語" },
+  { id: "en", native: "English", zh: "英語" },
   { id: "zh", native: "中文", zh: "中文" },
 ];
 
@@ -76,6 +78,18 @@ export const slotLabel: Record<Lang, Record<Slot, string>> = {
     evening: "ตอนเย็น",
     evening_after: "หลังอาหารเย็น",
     bedtime: "ก่อนนอน",
+  },
+  en: {
+    morning_before: "Before breakfast",
+    morning: "Morning",
+    morning_after: "After breakfast",
+    noon_before: "Before lunch",
+    noon: "Noon",
+    noon_after: "After lunch",
+    evening_before: "Before dinner",
+    evening: "Evening",
+    evening_after: "After dinner",
+    bedtime: "Bedtime",
   },
 };
 

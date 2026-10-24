@@ -2,6 +2,7 @@
 
 import { Toaster } from "@/components/ui/sonner";
 import { AppShell } from "@/components/app-shell";
+import { DoseWatcher } from "@/components/dose-watcher";
 import { StoreProvider } from "@/lib/store";
 import { useEffect } from "react";
 
@@ -19,6 +20,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <StoreProvider>
       <RegisterServiceWorker />
+      <DoseWatcher />
       <AppShell>{children}</AppShell>
       <Toaster theme="light" position="top-center" richColors closeButton />
     </StoreProvider>

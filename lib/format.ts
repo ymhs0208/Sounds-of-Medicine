@@ -35,7 +35,8 @@ export function findDrug(bags: Bag[], drugId: string): { bag: Bag; drug: Drug } 
   return null;
 }
 
-export function patientName(bags: Bag[]): string {
+export function patientName(bags: Bag[], profile?: string): string {
+  if (profile?.trim()) return profile.trim();
   return bags.find((bag) => bag.patientZh.trim())?.patientZh.trim() ?? "";
 }
 
@@ -62,6 +63,7 @@ const LOCALE: Record<Lang, string> = {
   vi: "vi-VN",
   fil: "fil-PH",
   th: "th-TH",
+  en: "en-US",
 };
 
 export function formatLongDate(isoDate: string, lang: Lang): string {

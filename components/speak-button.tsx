@@ -24,7 +24,7 @@ export function SpeakButton({ drug, lang }: { drug: Drug; lang: Lang }) {
     setActive(which);
     const result = await speak(spokenScript(drug, target), target);
     setActive(null);
-    if (result === "unavailable") toast(t.voiceMissing);
+    if (result !== "ok") toast(t.voiceMissing);
   }
 
   return (

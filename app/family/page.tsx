@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { toast } from "sonner";
+import { AdherenceCard } from "@/components/adherence-card";
 import { DuplicateBanner } from "@/components/duplicate-banner";
 import { Disclaimer } from "@/components/disclaimer";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ const REPLIES: ReplyTemplate[] = ["thanks", "tonight", "watch", "pharmacist"];
 export default function FamilyPage() {
   const store = useStore();
   const t = ui.zh;
-  const name = patientName(store.bags);
+  const name = patientName(store.bags, store.patientName);
   const history = [...store.reports].reverse();
 
   return (
@@ -27,7 +28,11 @@ export default function FamilyPage() {
         <h1 className="text-3xl font-semibold">{t.familyTitle}</h1>
         <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.familyLead}</p>
         {name ? <p className="mt-2 text-lg font-semibold">{t.printPatient}　{name}</p> : null}
+        {store.familyContact ? (
+          <p className="mt-1 text-sm text-muted-foreground">{t.familyContactShow}　{store.familyContact}</p>
+        ) : null}
       </div>
+      <AdherenceCard lang="zh" />
       <Button nativeButton={false} className="h-12 w-full rounded-2xl text-base" render={<Link href="/family/print" />}>
         {t.print}
       </Button>

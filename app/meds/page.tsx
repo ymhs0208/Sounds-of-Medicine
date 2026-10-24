@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { DuplicateBanner } from "@/components/duplicate-banner";
 import { duplicateDrugIds } from "@/lib/duplicates";
 import { drugText, fill, patientName } from "@/lib/format";
@@ -12,7 +13,7 @@ export default function MedsPage() {
   const store = useStore();
   const t = ui[store.lang];
   const dupes = duplicateDrugIds(store.bags);
-  const name = patientName(store.bags);
+  const name = patientName(store.bags, store.patientName);
 
   return (
     <div className="space-y-4 pb-6">
@@ -21,6 +22,9 @@ export default function MedsPage() {
         <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.medsLead}</p>
         {name ? <p className="mt-1 text-base font-semibold">{t.patientLabel}　{name}</p> : null}
       </div>
+      <Button nativeButton={false} className="h-12 w-full rounded-2xl" render={<Link href="/meds/edit" />}>
+        {t.manualEntry}
+      </Button>
       <DuplicateBanner lang={store.lang} />
       {store.bags.length === 0 ? (
         <p className="rounded-3xl bg-card px-4 py-6 text-base ring-1 ring-border">{t.noMeds}</p>
@@ -28,7 +32,10 @@ export default function MedsPage() {
         store.bags.map((bag) => (
           <section key={bag.id} className="overflow-hidden rounded-3xl bg-card ring-1 ring-foreground/10">
             <div className="px-4 py-3 text-white" style={{ background: bag.theme }}>
-              <div className="text-lg font-semibold">{bag.hospitalZh}</div>
+              <div className="flex items-center justify-between gap-2">
+                <div className="text-lg font-semibold">{bag.hospitalZh}</div>
+                {bag.source === "demo" ? <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-semibold">{t.demoBadge}</span> : null}
+              </div>
               <div className="text-sm text-white/80">
                 {bag.pharmacyZh} · {bag.dispensingLabel}
               </div>

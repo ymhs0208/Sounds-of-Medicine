@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AskLine } from "@/components/ask-line";
+import { APP_NAME } from "@/lib/brand";
 import { features } from "@/lib/i18n/features";
 import { bagActiveOn } from "@/lib/bag-draft";
 import { todayISO } from "@/lib/format";
@@ -14,7 +15,7 @@ export function emergencyText(input: {
   meds: { hospital: string; name: string; dose: string; usage: string }[];
 }): string {
   const lines = [
-    "藥聲緊急卡",
+    `${APP_NAME}緊急卡`,
     `姓名 ${input.patientName || "—"}`,
     `過敏 ${input.allergies || "尚未填寫"}`,
     `家屬 ${input.familyContact || "—"}`,

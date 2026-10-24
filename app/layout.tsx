@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans, Noto_Sans_TC, Noto_Sans_Thai } from "next/font/google";
 import { Providers } from "@/components/providers";
+import { APP_NAME, APP_TITLE } from "@/lib/brand";
 import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
@@ -27,19 +28,19 @@ const thai = Noto_Sans_Thai({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: { default: "藥聲 YaoSheng", template: "%s｜藥聲" },
+  title: { default: APP_TITLE, template: `%s｜${APP_NAME}` },
   description: "外籍看護的藥袋語音助手。只翻譯並朗讀藥袋上的文字，不提供醫療建議。",
-  applicationName: "藥聲",
+  applicationName: APP_NAME,
   manifest: "/manifest.json",
   openGraph: {
-    title: "藥聲 YaoSheng",
+    title: APP_TITLE,
     description: "把藥袋上的字，說成你聽得懂的話。",
     url: siteUrl,
-    siteName: "藥聲",
+    siteName: APP_NAME,
     locale: "zh_TW",
     type: "website",
   },
-  appleWebApp: { capable: true, title: "藥聲", statusBarStyle: "black-translucent" },
+  appleWebApp: { capable: true, title: APP_NAME, statusBarStyle: "black-translucent" },
   icons: {
     icon: [
       { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },

@@ -30,7 +30,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <Runtime />
         <DoseWatcher />
         <AppShell>{children}</AppShell>
-        <Toaster position="top-center" richColors />
+        <Toaster position="bottom-center" duration={4000} visibleToasts={2} richColors />
       </CircleProvider>
     </StoreProvider>
   );

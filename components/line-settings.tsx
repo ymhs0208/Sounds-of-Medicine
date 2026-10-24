@@ -90,7 +90,7 @@ export function LineSettings() {
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.lead}</p>
       {enabled === false ? <p className="mt-2 text-sm leading-relaxed" role="status">{t.unavailable}</p> : null}
       {enabled && !user ? (
-        <a className="mt-3 inline-flex min-h-12 items-center rounded-2xl bg-[#06c755] px-4 font-semibold text-white" href="/api/auth/line/start">
+        <a className="mt-3 inline-flex min-h-12 items-center rounded-2xl bg-[#06c755] px-4 font-semibold text-[#062117]" href="/api/auth/line/start">
           LINE
         </a>
       ) : null}
@@ -103,7 +103,7 @@ export function LineSettings() {
       <div className="mt-3 grid gap-2">
         <button
           type="button"
-          className="min-h-12 rounded-2xl bg-[#06c755] px-4 font-semibold text-white"
+          className="min-h-12 rounded-2xl bg-[#06c755] px-4 font-semibold text-[#062117]"
           onClick={async () => {
             const response = await fetch("/api/line/link", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ lang: store.lang }) });
             const body = (await response.json().catch(() => ({}))) as { code?: string };

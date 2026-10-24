@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { AskLine } from "@/components/ask-line";
+import { PageHeader } from "@/components/page-header";
 import { EmergencyCard } from "@/components/emergency-card";
 import { Button } from "@/components/ui/button";
 import { features } from "@/lib/i18n/features";
@@ -37,11 +38,8 @@ export default function EmergencyPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-4 pb-8">
-      <div>
-        <h1 className="text-3xl font-semibold">{t.emergencyTitle}</h1>
-        <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.emergencyLead}</p>
-      </div>
+    <div className="space-y-4 pb-8">
+      <PageHeader title={t.emergencyTitle} lead={t.emergencyLead} />
       <AskLine lang={store.lang} />
       <label className="block text-sm font-semibold text-pine">
         {t.emergencyAllergies}

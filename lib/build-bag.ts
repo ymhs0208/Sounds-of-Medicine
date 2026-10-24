@@ -1,3 +1,4 @@
+import { normalizeDrugLabels } from "./display-name";
 import { coerceISO } from "./format";
 import { uid } from "./id";
 import type { Extraction } from "./extraction";
@@ -34,7 +35,7 @@ export function bagFromExtraction(
           warnings: drug.translation.warnings.length ? drug.translation.warnings : built.warningsZh,
         };
       }
-      return built;
+      return normalizeDrugLabels(built);
     });
 
   const hospital = data.hospital ?? "";

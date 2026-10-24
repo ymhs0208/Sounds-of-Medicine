@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, ImagePlus } from "lucide-react";
+import { PageHeader } from "@/components/page-header";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { BagArtwork } from "@/components/bag-artwork";
 import { Button } from "@/components/ui/button";
@@ -84,12 +86,8 @@ export default function ScanPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-4 pb-6">
-      <div>
-        <p className="text-sm font-semibold text-pine">{staticDemo ? t.demoMode : llm ? t.llmMode : t.manualEntry}</p>
-        <h1 className="text-3xl font-semibold">{t.scanTitle}</h1>
-        <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.scanLead}</p>
-      </div>
+    <div className="space-y-4 pb-6">
+      <PageHeader kicker={staticDemo ? t.demoMode : llm ? t.llmMode : t.manualEntry} title={t.scanTitle} lead={t.scanLead} />
       {staticDemo ? (
         <p className="rounded-2xl bg-amber-bg px-4 py-3 text-base font-semibold leading-relaxed text-amber-ink">
           {t.staticNoOcr}
@@ -168,6 +166,8 @@ export default function ScanPage() {
               <div className="scanline absolute right-6 left-6 h-0.5 bg-[#b7f0cf]" />
             </div>
             <p className="mt-4 text-lg font-semibold">{t.reading}</p>
+            <Skeleton className="mx-auto mt-3 h-3 w-40" />
+            <Skeleton className="mx-auto mt-2 h-3 w-28" />
           </div>
         </div>
       ) : null}

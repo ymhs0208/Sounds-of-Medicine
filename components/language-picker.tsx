@@ -28,7 +28,10 @@ export function LanguagePicker({
                 : "border-border bg-card text-foreground hover:bg-secondary",
             )}
           >
-            <span className="text-lg font-semibold">{option.native}</span>
+            <span className="flex items-center gap-3">
+              <span className="text-2xl leading-none" aria-hidden="true">{option.flag}</span>
+              <span className="text-lg font-semibold">{option.native}</span>
+            </span>
             <span className={cn("text-sm", selected ? "text-white/80" : "text-muted-foreground")}>
               {option.zh}
             </span>

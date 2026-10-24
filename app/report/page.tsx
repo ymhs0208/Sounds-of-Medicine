@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdherenceCard } from "@/components/adherence-card";
+import { PageHeader } from "@/components/page-header";
 import { SymptomLog } from "@/components/symptom-log";
 import { features } from "@/lib/i18n/features";
 import { Button } from "@/components/ui/button";
@@ -58,10 +59,7 @@ export default function ReportPage() {
 
   return (
     <div className="space-y-4 pb-8">
-      <div>
-        <h1 className="text-3xl font-semibold">{t.reportTitle}</h1>
-        <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.reportLead}</p>
-      </div>
+      <PageHeader title={t.reportTitle} lead={t.reportLead} />
       <AdherenceCard lang={lang} />
       <SymptomLog />
       {store.symptoms.length ? (

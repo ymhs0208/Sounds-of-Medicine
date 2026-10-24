@@ -1,4 +1,5 @@
 import { AskLine } from "@/components/ask-line";
+import { Wordmark } from "@/components/logo";
 import { features } from "@/lib/i18n/features";
 import { fill } from "@/lib/format";
 import type { VisitSummary } from "@/lib/summary";
@@ -17,7 +18,7 @@ export function VisitSheet({ summary }: { summary: VisitSummary }) {
   const percent = summary.adherence.percent === null ? "—" : `${summary.adherence.percent}%`;
   return (
     <div className="print-sheet space-y-4">
-      <p className="text-sm font-semibold text-[#1b5e45]">藥聲</p>
+      <p className="text-sm font-semibold text-[#1b5e45]"><Wordmark /></p>
       <h1 className="text-3xl font-semibold">{t.visitTitle}</h1>
       <p className="text-base leading-relaxed">{t.visitLead}</p>
       <AskLine lang="zh" />

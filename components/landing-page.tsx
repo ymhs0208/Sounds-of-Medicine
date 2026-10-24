@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Logo, Wordmark } from "@/components/logo";
+import { APP_NAME_LATIN } from "@/lib/brand";
 import { launch } from "@/lib/i18n/launch";
 import { useStore } from "@/lib/store";
 import type { Lang } from "@/lib/types";
@@ -24,28 +26,34 @@ export function LandingPage() {
   const t = launch[lang];
   return (
     <main className="mx-auto w-full max-w-3xl px-4 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))]">
-      <p className="text-sm font-semibold text-pine">藥聲 YaoSheng</p>
-      <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="語言 Language">
+      <div className="flex items-center gap-3">
+        <Logo className="size-12" />
+        <div>
+          <Wordmark className="block text-xl" />
+          <p className="text-sm font-semibold text-pine">{APP_NAME_LATIN}</p>
+        </div>
+      </div>
+      <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="語言 Language">
         {ORDER.map((item) => (
           <button key={item} type="button" className="min-h-11 rounded-full px-3 text-sm font-semibold ring-1 ring-border" onClick={() => setLang(item)} aria-pressed={item === lang}>
             {LABEL[item]}
           </button>
         ))}
       </div>
-      <h1 className="mt-4 text-4xl font-semibold tracking-tight">藥聲</h1>
-      <section className="mt-6">
+      <h1 className="mt-6 text-4xl font-semibold tracking-tight"><Wordmark /></h1>
+      <section className="ys-card mt-6 p-4">
         <h2 className="text-xl font-semibold">{t.forTitle}</h2>
         <p className="mt-2 text-base leading-relaxed">{t.forBody}</p>
       </section>
-      <section className="mt-6">
+      <section className="ys-card mt-4 p-4">
         <h2 className="text-xl font-semibold">{t.doesTitle}</h2>
         <p className="mt-2 text-base leading-relaxed">{t.doesBody}</p>
       </section>
-      <section className="mt-6">
+      <section className="ys-card mt-4 p-4">
         <h2 className="text-xl font-semibold">{t.notTitle}</h2>
         <p className="mt-2 text-base leading-relaxed">{t.notBody}</p>
       </section>
-      <section className="mt-6">
+      <section className="ys-card mt-4 p-4">
         <h2 className="text-xl font-semibold">{t.installTitle}</h2>
         <ul className="mt-2 list-disc space-y-2 pl-5 text-base leading-relaxed">
           <li>{t.installAndroid}</li>
@@ -53,7 +61,7 @@ export function LandingPage() {
           <li>{t.installDesktop}</li>
         </ul>
       </section>
-      <section className="mt-6">
+      <section className="ys-card mt-4 p-4">
         <h2 className="text-xl font-semibold">{t.privacy}</h2>
         <p className="mt-2 text-base leading-relaxed">{t.privacySummary}</p>
         <Link className="mt-2 inline-flex min-h-11 items-center font-semibold underline" href="/privacy">{t.privacy}</Link>

@@ -38,7 +38,7 @@ export async function translateLines(lines: string[], lang: Lang, from?: Lang): 
           {
             role: "system",
             content:
-              "Translate each line into the requested language. Keep the same array length and order. Do not answer questions, add medical advice, change doses, or add facts that are not in the source line. A question stays a question. Empty strings stay empty. Return JSON {\"lines\": string[]}.",
+              "Translate each line into the requested language. Keep the same array length and order. Do not answer questions, add medical advice, change doses, or add facts that are not in the source line. A question stays a question. Empty strings stay empty. If a line is a medicine name, keep the translation to a short name (generic plus brand). Do not append purpose, dose instructions, or warnings onto a name line. Return JSON {\"lines\": string[]}.",
           },
           {
             role: "user",

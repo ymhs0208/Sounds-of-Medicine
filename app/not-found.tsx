@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Wordmark } from "@/components/logo";
 
 export default function NotFound() {
   return (
@@ -7,7 +8,7 @@ export default function NotFound() {
       <p className="mt-3 text-base leading-relaxed">This page is not part of YaoSheng.</p>
       <p className="mt-4">
         <Link className="inline-flex min-h-12 items-center font-semibold underline" href="/">
-          藥聲
+          <Wordmark />
         </Link>
       </p>
     </main>

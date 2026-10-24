@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { Pill } from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { DuplicateBanner } from "@/components/duplicate-banner";
 import { duplicateDrugIds } from "@/lib/duplicates";
@@ -16,18 +19,14 @@ export default function MedsPage() {
   const name = patientName(store.bags, store.patientName);
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-4 pb-6">
-      <div>
-        <h1 className="text-3xl font-semibold">{t.medsTitle}</h1>
-        <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.medsLead}</p>
-        {name ? <p className="mt-1 text-base font-semibold">{t.patientLabel}　{name}</p> : null}
-      </div>
+    <div className="space-y-4 pb-6">
+      <PageHeader title={t.medsTitle} lead={t.medsLead} extra={name ? <p className="text-base font-semibold">{t.patientLabel}　{name}</p> : null} />
       <Button nativeButton={false} className="h-12 w-full rounded-2xl" render={<Link href="/meds/edit" />}>
         {t.manualEntry}
       </Button>
       <DuplicateBanner lang={store.lang} />
       {store.bags.length === 0 ? (
-        <p className="rounded-3xl bg-card px-4 py-6 text-base ring-1 ring-border">{t.noMeds}</p>
+        <EmptyState icon={Pill} title={t.noMeds} body={t.emptyBody} />
       ) : (
         store.bags.map((bag) => (
           <section key={bag.id} className="overflow-hidden rounded-3xl bg-card ring-1 ring-foreground/10">
@@ -49,7 +48,8 @@ export default function MedsPage() {
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <div className="text-lg font-semibold leading-tight break-words">{text.name}</div>
-                        {store.lang !== "zh" ? <div className="text-sm break-words text-muted-foreground">{drug.nameZh}</div> : null}
+                        {store.lang !== "zh" && drug.nameZh !== text.name ? <div className="text-sm break-words text-muted-foreground">{drug.nameZh}</div> : null}
+                        {text.indication ? <div className="text-sm break-words text-muted-foreground">{text.indication}</div> : null}
                         <div className="text-sm break-words text-muted-foreground">{text.usage}</div>
                       </div>
                       {dupes.has(drug.id) ? (

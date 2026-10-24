@@ -59,7 +59,7 @@ export default function MedicineCardClient() {
             {bag.hospitalZh}
           </p>
           <h1 className="mt-1 text-3xl font-semibold leading-tight">{text.name}</h1>
-          {showZh ? <p className="mt-1 text-base text-muted-foreground">{drug.nameZh}</p> : null}
+          {store.lang !== "zh" && drug.nameZh && drug.nameZh !== text.name ? <p className="mt-1 text-base text-muted-foreground">{drug.nameZh}</p> : null}
           <p className="mt-2 text-sm text-muted-foreground">
             {bag.pharmacyZh} · {bag.dispensingLabel || rocLabel(bag.dispensingDate, "")}
           </p>

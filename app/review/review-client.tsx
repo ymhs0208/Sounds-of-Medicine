@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { BagFace } from "@/components/bag-artwork";
+import { PageHeader } from "@/components/page-header";
+import { Skeleton } from "@/components/ui/skeleton";
 import { BagForm } from "@/components/bag-form";
 import { Disclaimer } from "@/components/disclaimer";
 import { Button } from "@/components/ui/button";
@@ -50,7 +52,9 @@ export default function ReviewClient() {
 
   if (!bag) {
     return (
-      <div className="mx-auto w-full max-w-3xl py-10 text-center">
+      <div className="mx-auto w-full max-w-3xl space-y-3 py-10">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-24 w-full" />
         <p className="text-lg">{t.scanLead}</p>
         <Button type="button" className="mt-4 h-12 rounded-2xl" onClick={() => router.push("/scan")}>
           {t.rescan}
@@ -62,12 +66,8 @@ export default function ReviewClient() {
   const mismatch = namesDiffer(store.bags, bag.patientZh);
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-4 pb-8">
-      <div>
-        <p className="text-sm font-semibold text-pine">{t.fromBag}</p>
-        <h1 className="text-3xl font-semibold">{t.reviewTitle}</h1>
-        <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.reviewLead}</p>
-      </div>
+    <div className="space-y-4 pb-8">
+      <PageHeader kicker={t.fromBag} title={t.reviewTitle} lead={t.reviewLead} />
       {bag.source === "demo" ? (
         <p className="rounded-2xl bg-amber-bg px-3 py-2 text-sm font-semibold text-amber-ink">{t.sampleFictional}</p>
       ) : null}

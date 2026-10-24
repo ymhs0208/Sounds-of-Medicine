@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { AskLine } from "@/components/ask-line";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { features } from "@/lib/i18n/features";
-import { fill, todayISO } from "@/lib/format";
+import { drugText, fill, findDrug, todayISO } from "@/lib/format";
 import { ui } from "@/lib/i18n";
 import { refillStatuses } from "@/lib/refill";
 import { useStore } from "@/lib/store";
@@ -15,16 +16,19 @@ export default function RefillPage() {
   const rows = refillStatuses(store.bags, store.logs, todayISO());
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-4 pb-8">
-      <div>
-        <h1 className="text-3xl font-semibold">{t.refillTitle}</h1>
-        <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.refillLead}</p>
-      </div>
+    <div className="space-y-4 pb-8">
+      <PageHeader title={t.refillTitle} lead={t.refillLead} />
       <AskLine lang={store.lang} />
       {rows.length === 0 ? <p className="rounded-3xl bg-card px-4 py-6 ring-1 ring-border">{t.refillNone}</p> : null}
-      {rows.map((row) => (
-        <article key={row.drugId} className="rounded-3xl bg-card p-4 ring-1 ring-border">
-          <h2 className="text-xl font-semibold break-words">{row.nameZh}</h2>
+      {rows.map((row) => {
+        const found = findDrug(store.bags, row.drugId);
+        const title = found ? drugText(found.drug, store.lang).name : row.nameZh;
+        return (
+        <article key={row.drugId} className="ys-card p-4">
+          <h2 className="text-xl font-semibold break-words">{title}</h2>
+          {store.lang !== "zh" && row.nameZh && row.nameZh !== title ? (
+            <p className="text-sm text-muted-foreground">{row.nameZh}</p>
+          ) : null}
           <p className="text-sm text-muted-foreground">{row.hospitalZh}</p>
           <p className="mt-2 text-lg font-semibold">{row.daysLeft === 0 ? t.refillOut : fill(t.refillDays, { days: String(row.daysLeft) })}</p>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
@@ -44,7 +48,8 @@ export default function RefillPage() {
             {ui[store.lang].editBag}
           </Button>
         </article>
-      ))}
+        );
+      })}
     </div>
   );
 }

@@ -9,13 +9,13 @@ import { zh, type UiPack } from "./zh";
 
 export const ui: Record<Lang, UiPack> = { zh, id, vi, fil, th, en };
 
-export const LANG_OPTIONS: { id: Lang; native: string; zh: string }[] = [
-  { id: "id", native: "Bahasa Indonesia", zh: "印尼語" },
-  { id: "vi", native: "Tiếng Việt", zh: "越南語" },
-  { id: "fil", native: "Filipino", zh: "菲律賓語" },
-  { id: "th", native: "ภาษาไทย", zh: "泰語" },
-  { id: "en", native: "English", zh: "英語" },
-  { id: "zh", native: "中文", zh: "中文" },
+export const LANG_OPTIONS: { id: Lang; native: string; zh: string; flag: string }[] = [
+  { id: "id", native: "Bahasa Indonesia", zh: "印尼語", flag: "🇮🇩" },
+  { id: "vi", native: "Tiếng Việt", zh: "越南語", flag: "🇻🇳" },
+  { id: "fil", native: "Filipino", zh: "菲律賓語", flag: "🇵🇭" },
+  { id: "th", native: "ภาษาไทย", zh: "泰語", flag: "🇹🇭" },
+  { id: "en", native: "English", zh: "英語", flag: "🇬🇧" },
+  { id: "zh", native: "中文", zh: "中文", flag: "🇹🇼" },
 ];
 
 export const slotLabel: Record<Lang, Record<Slot, string>> = {

@@ -21,6 +21,8 @@ Rules:
   morning_before (早餐前 or 早上飯前), morning (早上 without 飯前/飯後), morning_after (早餐後 or 早上飯後),
   noon_before, noon, noon_after, evening_before, evening, evening_after, bedtime (睡前).
   早晚 without 飯 means ["morning","evening"]. If timing is unclear, use [].
+- nameZh is ONLY the printed drug name: brand plus strength when printed (example: 脈優錠 5 毫克). Never put indication, usage, frequency, or warnings into nameZh.
+- translation.name is a SHORT display name: generic (INN) plus brand, about 40 characters at most. Purpose belongs only in indication. Instructions belong only in usage. Never write a sentence in name.
 - translation is a faithful plain-language rendering of the printed Chinese fields into the requested language. Do not add facts that are not in that Chinese field. Null Chinese means null translation.
 - warningsZh lists distinct printed warning lines only.
 

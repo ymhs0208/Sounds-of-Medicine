@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Wordmark } from "@/components/logo";
 import { launch } from "@/lib/i18n/launch";
 import { legal, type LegalKind } from "@/lib/legal";
 import { useStore } from "@/lib/store";
@@ -23,7 +24,7 @@ export function LegalDoc({ kind }: { kind: LegalKind }) {
   const t = launch[lang];
   return (
     <main className="mx-auto w-full max-w-3xl px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))]">
-      <p className="text-sm font-semibold text-pine">藥聲</p>
+      <p className="text-sm font-semibold text-pine"><Wordmark /></p>
       <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="語言 Language">
         {ORDER.map((item) => (
           <button key={item} type="button" className="min-h-11 rounded-full px-3 text-sm font-semibold ring-1 ring-border" onClick={() => setLang(item)} aria-pressed={item === lang}>

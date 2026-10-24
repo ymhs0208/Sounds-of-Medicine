@@ -1,6 +1,7 @@
-import { isLang, type AppData, type Bag } from "./types";
+import { normalizeDrugLabels } from "./display-name";
+import { isLang, type AppData, type Bag, type Drug } from "./types";
 
-export const DATA_VERSION = 2;
+export const DATA_VERSION = 3;
 
 export const EMPTY_DATA: AppData = {
   version: DATA_VERSION,
@@ -26,7 +27,7 @@ export const EMPTY_DATA: AppData = {
 };
 
 function knownVersion(version: unknown): boolean {
-  return version === 1 || version === 2 || (typeof version === "number" && version > DATA_VERSION);
+  return version === 1 || version === 2 || version === DATA_VERSION || (typeof version === "number" && version > DATA_VERSION);
 }
 
 /** Keep saved bags across versions. Unknown future versions are not wiped or downgraded. */
@@ -44,7 +45,7 @@ export function normalizeData(parsed: Partial<AppData> | null | undefined): AppD
     allergiesZh: typeof parsed.allergiesZh === "string" ? parsed.allergiesZh : "",
     largeText: Boolean(parsed.largeText),
     pictograms: parsed.pictograms !== false,
-    bags: parsed.bags.filter(isBag),
+    bags: parsed.bags.filter(isBag).map((bag) => (typeof incoming === "number" && incoming <= DATA_VERSION ? migrateBag(bag) : bag)),
     logs: Array.isArray(parsed.logs) ? parsed.logs : [],
     reports: Array.isArray(parsed.reports) ? parsed.reports : [],
     notified: Array.isArray(parsed.notified) ? parsed.notified : [],
@@ -63,6 +64,13 @@ function isBag(value: unknown): value is Bag {
   if (!value || typeof value !== "object") return false;
   const bag = value as Bag;
   return typeof bag.id === "string" && Array.isArray(bag.drugs);
+}
+
+function migrateBag(bag: Bag): Bag {
+  return {
+    ...bag,
+    drugs: bag.drugs.map((drug) => normalizeDrugLabels(drug as Drug)),
+  };
 }
 
 /** JSON backup of saved fields only. The device key and in-memory store methods stay out. */

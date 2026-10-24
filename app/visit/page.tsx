@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { toast } from "sonner";
 import { AskLine } from "@/components/ask-line";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { summaryText, VisitSheet } from "@/components/visit-sheet";
 import { features } from "@/lib/i18n/features";
@@ -34,11 +35,8 @@ export default function VisitPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-4 pb-8">
-      <div>
-        <h1 className="text-3xl font-semibold">{t.visitTitle}</h1>
-        <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.visitLead}</p>
-      </div>
+    <div className="space-y-4 pb-8">
+      <PageHeader title={t.visitTitle} lead={t.visitLead} />
       <AskLine lang={store.lang} />
       <div className="flex flex-wrap gap-2">
         <Button nativeButton={false} className="h-12 rounded-2xl sm:w-auto" render={<Link href="/visit/print" />}>

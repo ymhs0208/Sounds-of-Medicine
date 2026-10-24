@@ -79,7 +79,7 @@ const CATHAY_DRUG = drug({
   slots: ["morning_after"],
   i18n: text(
     {
-      name: "Amlodipine 5 mg (nama di kemasan: 脈優錠)",
+      name: "Amlodipine 5 mg",
       dose: dose5.id.dose,
       quantity: qty28.id,
       usage: "Sehari sekali, setelah sarapan",
@@ -87,7 +87,7 @@ const CATHAY_DRUG = drug({
       warnings: [dizzy.id, noStop.id],
     },
     {
-      name: "Amlodipine 5 mg (tên trên túi: 脈優錠)",
+      name: "Amlodipine 5 mg",
       dose: dose5.vi.dose,
       quantity: qty28.vi,
       usage: "Mỗi ngày một lần, sau bữa sáng",
@@ -95,7 +95,7 @@ const CATHAY_DRUG = drug({
       warnings: [dizzy.vi, noStop.vi],
     },
     {
-      name: "Amlodipine 5 mg (pangalan sa supot: 脈優錠)",
+      name: "Amlodipine 5 mg",
       dose: dose5.fil.dose,
       quantity: qty28.fil,
       usage: "Isang beses sa isang araw, pagkatapos ng almusal",
@@ -103,7 +103,7 @@ const CATHAY_DRUG = drug({
       warnings: [dizzy.fil, noStop.fil],
     },
     {
-      name: "Amlodipine 5 มก. (ชื่อบนซอง: 脈優錠)",
+      name: "Amlodipine 5 มก.",
       dose: dose5.th.dose,
       quantity: qty28.th,
       usage: "วันละ 1 ครั้ง หลังอาหารเช้า",
@@ -125,7 +125,7 @@ const TPECH_DRUG = drug({
   slots: ["morning_after", "evening_after"],
   i18n: text(
     {
-      name: "Metformin 500 mg (nama di kemasan: 格華止)",
+      name: "Metformin 500 mg",
       dose: "1 tablet setiap kali (500 mg)",
       quantity: qty56.id,
       usage: "Dua kali sehari, setelah sarapan dan setelah makan malam",
@@ -136,7 +136,7 @@ const TPECH_DRUG = drug({
       ],
     },
     {
-      name: "Metformin 500 mg (tên trên túi: 格華止)",
+      name: "Metformin 500 mg",
       dose: "Mỗi lần 1 viên (500 mg)",
       quantity: qty56.vi,
       usage: "Mỗi ngày hai lần, sau bữa sáng và sau bữa tối",
@@ -144,7 +144,7 @@ const TPECH_DRUG = drug({
       warnings: ["Có thể khó chịu dạ dày.", "Uống đúng thời gian ghi trên túi thuốc."],
     },
     {
-      name: "Metformin 500 mg (pangalan sa supot: 格華止)",
+      name: "Metformin 500 mg",
       dose: "1 tableta kada inumin (500 mg)",
       quantity: qty56.fil,
       usage: "Dalawang beses sa isang araw, pagkatapos ng almusal at hapunan",
@@ -155,7 +155,7 @@ const TPECH_DRUG = drug({
       ],
     },
     {
-      name: "Metformin 500 มก. (ชื่อบนซอง: 格華止)",
+      name: "Metformin 500 มก.",
       dose: "ครั้งละ 1 เม็ด (500 มก.)",
       quantity: qty56.th,
       usage: "วันละ 2 ครั้ง หลังอาหารเช้าและหลังอาหารเย็น",
@@ -181,7 +181,7 @@ const FEMH_DRUG = drug({
   slots: ["morning", "evening"],
   i18n: text(
     {
-      name: "Apixaban 5 mg (nama di kemasan: 艾必克)",
+      name: "Apixaban 5 mg",
       dose: dose5.id.dose,
       quantity: qty56.id,
       usage: "Dua kali sehari, pagi dan malam masing-masing satu kali",
@@ -193,7 +193,7 @@ const FEMH_DRUG = drug({
       ],
     },
     {
-      name: "Apixaban 5 mg (tên trên túi: 艾必克)",
+      name: "Apixaban 5 mg",
       dose: dose5.vi.dose,
       quantity: qty56.vi,
       usage: "Mỗi ngày hai lần, sáng và tối mỗi buổi một lần",
@@ -205,7 +205,7 @@ const FEMH_DRUG = drug({
       ],
     },
     {
-      name: "Apixaban 5 mg (pangalan sa supot: 艾必克)",
+      name: "Apixaban 5 mg",
       dose: dose5.fil.dose,
       quantity: qty56.fil,
       usage: "Dalawang beses sa isang araw, isa sa umaga at isa sa gabi",
@@ -217,7 +217,7 @@ const FEMH_DRUG = drug({
       ],
     },
     {
-      name: "Apixaban 5 มก. (ชื่อบนซอง: 艾必克)",
+      name: "Apixaban 5 มก.",
       dose: dose5.th.dose,
       quantity: qty56.th,
       usage: "วันละ 2 ครั้ง เช้าและเย็นอย่างละครั้ง",
@@ -243,7 +243,7 @@ const DAAN_DRUG = drug({
   slots: ["morning_after"],
   i18n: text(
     {
-      name: "Amlodipine 5 mg (nama di kemasan: 安脈優錠)",
+      name: "Amlodipine 5 mg",
       dose: dose5.id.dose,
       quantity: qty28.id,
       usage: "Sehari sekali, setelah sarapan",
@@ -251,7 +251,7 @@ const DAAN_DRUG = drug({
       warnings: [dizzy.id],
     },
     {
-      name: "Amlodipine 5 mg (tên trên túi: 安脈優錠)",
+      name: "Amlodipine 5 mg",
       dose: dose5.vi.dose,
       quantity: qty28.vi,
       usage: "Mỗi ngày một lần, sau bữa sáng",
@@ -259,7 +259,7 @@ const DAAN_DRUG = drug({
       warnings: [dizzy.vi],
     },
     {
-      name: "Amlodipine 5 mg (pangalan sa supot: 安脈優錠)",
+      name: "Amlodipine 5 mg",
       dose: dose5.fil.dose,
       quantity: qty28.fil,
       usage: "Isang beses sa isang araw, pagkatapos ng almusal",
@@ -267,7 +267,7 @@ const DAAN_DRUG = drug({
       warnings: [dizzy.fil],
     },
     {
-      name: "Amlodipine 5 มก. (ชื่อบนซอง: 安脈優錠)",
+      name: "Amlodipine 5 มก.",
       dose: dose5.th.dose,
       quantity: qty28.th,
       usage: "วันละ 1 ครั้ง หลังอาหารเช้า",

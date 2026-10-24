@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { LanguagePicker } from "@/components/language-picker";
 import { Disclaimer } from "@/components/disclaimer";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,7 +24,7 @@ import { ui } from "@/lib/i18n";
 import { features } from "@/lib/i18n/features";
 import { circleCopy } from "@/lib/i18n/circle";
 import { launch } from "@/lib/i18n/launch";
-import { notificationSupport, requestNotifications } from "@/lib/notify";
+import { notificationSupport, requestNotifications, showNotification } from "@/lib/notify";
 import { staticDemo } from "@/lib/routes";
 import { useStore } from "@/lib/store";
 
@@ -45,8 +46,8 @@ export default function SettingsPage() {
   }, []);
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-4 pb-8">
-      <h1 className="text-3xl font-semibold">{t.settingsTitle}</h1>
+    <div className="space-y-4 pb-8">
+      <PageHeader title={t.settingsTitle} />
       <section className="rounded-3xl bg-card p-4 ring-1 ring-border">
         <h2 className="text-base font-semibold">{features[store.lang].displayTitle}</h2>
         <label className="mt-3 flex min-h-11 items-center gap-3 text-base">
@@ -85,8 +86,10 @@ export default function SettingsPage() {
         </p>
         <p className="mt-2 text-sm font-semibold text-pine">{staticDemo ? t.staticNoOcr : llm ? t.llmMode : t.manualEntry}</p>
       </section>
-      <section className="rounded-3xl bg-card p-4 ring-1 ring-border">
+      <section className="ys-card p-4">
         <h2 className="text-base font-semibold">{t.reminders}</h2>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.worksOffline}</p>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.notifLimit}</p>
         <Button
           type="button"
           variant="outline"
@@ -97,6 +100,22 @@ export default function SettingsPage() {
           }}
         >
           {notificationSupport() === "granted" ? t.remindersOn : t.enableReminders}
+        </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          className="mt-2 h-12 w-full rounded-2xl"
+          onClick={() => {
+            const support = notificationSupport();
+            if (support === "unsupported") toast(t.notifUnsupported);
+            else if (support !== "granted") toast(t.notifDenied);
+            else {
+              void showNotification(t.notifTitle, fill(t.notifBody, { slot: t.todayTitle }));
+              toast.success(t.testSent);
+            }
+          }}
+        >
+          {t.testReminder}
         </Button>
       </section>
       <PushPanel />

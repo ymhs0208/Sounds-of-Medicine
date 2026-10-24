@@ -3,7 +3,7 @@ import { slotLabel } from "@/lib/i18n";
 import { slotDayPart, slotTiming, type Slot } from "@/lib/slots";
 import type { Bag, Lang } from "@/lib/types";
 
-function timingIcon(slot: Slot) {
+export function timingIcon(slot: Slot) {
   const part = slotDayPart(slot);
   const timing = slotTiming(slot);
   if (part === "bedtime") return Moon;

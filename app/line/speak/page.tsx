@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PageHeader } from "@/components/page-header";
 import { lineCopy } from "@/lib/i18n/line";
 import { LINE_DISCLAIMER } from "@/lib/line-messages";
 import { useStore } from "@/lib/store";
@@ -41,8 +42,7 @@ export default function LineSpeakPage() {
 
   return (
     <div className="mx-auto w-full max-w-3xl">
-      <h1 className="text-3xl font-semibold">{t.readTitle}</h1>
-      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.readBody}</p>
+      <PageHeader title={t.readTitle} lead={t.readBody} />
       <p className="mt-4 whitespace-pre-wrap text-lg leading-relaxed">{text}</p>
       <p className="mt-3 text-sm leading-relaxed">{LINE_DISCLAIMER[store.lang]}</p>
       <button type="button" className="mt-4 min-h-12 rounded-2xl bg-pine px-4 font-semibold text-white" onClick={speak}>

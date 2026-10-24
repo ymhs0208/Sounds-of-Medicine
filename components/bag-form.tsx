@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { DAY_PARTS, scheduleFromSlots, slotsFromSchedule, type DayPart, type MealChoice } from "@/lib/bag-draft";
+import { normalizeDrugLabels } from "@/lib/display-name";
 import { uid } from "@/lib/id";
 import { slotLabel, ui } from "@/lib/i18n";
 import { features } from "@/lib/i18n/features";
@@ -190,7 +191,7 @@ export function BagForm({
             },
           };
         }
-        return built;
+        return normalizeDrugLabels(built);
       }),
     };
     onSubmit(bag);

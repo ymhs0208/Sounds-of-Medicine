@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Wordmark } from "@/components/logo";
 import { DuplicateBanner } from "@/components/duplicate-banner";
 import { replyLabel, reportSentence } from "@/lib/copy";
 import { formatDateTime, patientName, rocLabel, todayISO } from "@/lib/format";
@@ -23,7 +24,7 @@ export default function PrintPage() {
           {t.printButton}
         </button>
       </div>
-      <p className="text-sm font-semibold text-[#1b5e45]">藥聲</p>
+      <p className="text-sm font-semibold text-[#1b5e45]"><Wordmark /></p>
       <h1 className="mt-1 text-3xl font-semibold">{t.printTitle}</h1>
       <p className="mt-3 text-base leading-relaxed">{t.printNote}</p>
       <dl className="mt-4 grid grid-cols-1 gap-3 text-base sm:grid-cols-2">

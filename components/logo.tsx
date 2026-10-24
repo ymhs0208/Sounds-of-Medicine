@@ -1,11 +1,17 @@
+import { APP_NAME } from "@/lib/brand";
+import { cn } from "@/lib/utils";
+
 export function Logo({ className = "size-10" }: { className?: string }) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
       <rect width="48" height="48" rx="14" fill="#1b5e45" />
-      <path d="M15 14h18l3 5v16a3 3 0 0 1-3 3H15a3 3 0 0 1-3-3V19l3-5z" fill="#f4efe4" />
-      <path d="M15 14h18l-2.2 4.2H17.2L15 14z" fill="#c4553a" />
-      <path d="M18 27h5M26.5 27c1.6-2.2 3.2-2.2 4.8 0 1.6 2.2 3.2 2.2 4.2 0" stroke="#1b5e45" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-      <path d="M18 32h12" stroke="#1b5e45" strokeWidth="1.8" strokeLinecap="round" />
+      <rect x="13" y="18" width="14" height="12" rx="6" fill="#f6f1e8" />
+      <path d="M31 17.5c3.2 2.4 3.2 10.6 0 13" stroke="#f6f1e8" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+      <path d="M35.5 14c4.6 3.6 4.6 16.4 0 20" stroke="#e7c27a" strokeWidth="2.2" fill="none" strokeLinecap="round" />
     </svg>
   );
+}
+
+export function Wordmark({ className }: { className?: string }) {
+  return <span className={cn("font-semibold tracking-tight", className)}>{APP_NAME}</span>;
 }

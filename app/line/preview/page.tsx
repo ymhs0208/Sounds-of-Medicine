@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/page-header";
 import { previewCards } from "@/lib/line-messages";
 import { lineCopy } from "@/lib/i18n/line";
 import { useStore } from "@/lib/store";
@@ -9,7 +10,7 @@ export default function LinePreviewPage() {
   const cards = previewCards(store.lang);
   return (
     <div className="mx-auto w-full max-w-3xl space-y-4 pb-8">
-      <h1 className="text-3xl font-semibold">{lineCopy[store.lang].preview}</h1>
+      <PageHeader title={lineCopy[store.lang].preview} />
       <div className="space-y-4 rounded-[2rem] bg-[#7494c0] p-4">
         {cards.map((card) => (
           <article key={card.title} className="ml-auto w-full max-w-sm rounded-2xl bg-white p-4 text-[#1c1915] shadow-sm" data-flex-preview="1">

@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { Mic } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { ChevronLeft, MessageSquareText, Mic } from "lucide-react";
 import { toast } from "sonner";
 import { AskLine } from "@/components/ask-line";
+import { EmptyState } from "@/components/empty-state";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { features } from "@/lib/i18n/features";
+import { features, type FeaturePack } from "@/lib/i18n/features";
 import { listenOnce, speechInputSupport } from "@/lib/listen";
 import { PHRASES, type Phrase } from "@/lib/phrases";
 import { paidPost } from "@/lib/paid-client";
@@ -116,11 +119,8 @@ export default function TalkPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-4 pb-8">
-      <div>
-        <h1 className="text-3xl font-semibold">{t.talkTitle}</h1>
-        <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.talkLead}</p>
-      </div>
+    <div className="space-y-4 pb-8">
+      <PageHeader title={t.talkTitle} lead={t.talkLead} />
       <AskLine lang={store.lang} />
       <section className="space-y-2">
         <h2 className="text-sm font-semibold text-pine">{t.talkPreset}</h2>
@@ -164,7 +164,7 @@ export default function TalkPage() {
       </section>
       <section className="space-y-2">
         <h2 className="text-lg font-semibold">{t.talkHistory}</h2>
-        {history.length === 0 ? <p className="text-sm text-muted-foreground">{t.talkPreset}</p> : null}
+        {history.length === 0 ? <EmptyState icon={MessageSquareText} title={t.talkHistory} body={t.talkPreset} /> : null}
         {history.map((card) => (
           <button key={card.id} type="button" className="block w-full min-w-0 rounded-2xl bg-card px-4 py-3 text-left ring-1 ring-border" onClick={() => open(card)}>
             <span className="block text-base font-semibold break-words">{card.textCare || card.text}</span>
@@ -172,22 +172,87 @@ export default function TalkPage() {
           </button>
         ))}
       </section>
-      {large && focus ? (
-        <div className="fixed inset-0 z-50 flex flex-col bg-background px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col">
-            <p className="text-sm font-semibold text-pine">{t.talkChinese}</p>
-            <h2 className="mt-3 text-4xl leading-tight font-semibold break-words sm:text-5xl">{focus.textZh || focus.text}</h2>
-            <p className="mt-6 text-sm font-semibold text-muted-foreground">{t.talkOriginal}</p>
-            <p className="mt-1 text-lg leading-snug break-words">{focus.textCare || focus.text}</p>
-            <div className="mt-auto space-y-3 pt-6">
-              <AskLine lang="zh" />
-              <Button type="button" variant="outline" className="h-14 w-full rounded-2xl text-lg" onClick={() => setLarge(false)}>
-                {t.talkHide}
-              </Button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      {large && focus ? <TalkOverlay card={focus} label={t.talkHide} onClose={() => setLarge(false)} t={t} /> : null}
     </div>
+  );
+}
+
+function TalkOverlay({
+  card,
+  label,
+  onClose,
+  t,
+}: {
+  card: TalkCard;
+  label: string;
+  onClose: () => void;
+  t: FeaturePack;
+}) {
+  const panel = useRef<HTMLDivElement>(null);
+  const closeButton = useRef<HTMLButtonElement>(null);
+
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
+  useEffect(() => {
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeButton.current?.focus();
+
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onCloseRef.current();
+        return;
+      }
+      if (event.key !== "Tab" || !panel.current) return;
+      const nodes = [...panel.current.querySelectorAll<HTMLElement>("a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex='-1'])")];
+      if (!nodes.length) return;
+      const first = nodes[0];
+      const last = nodes[nodes.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener("keydown", onKey);
+      previous?.focus();
+    };
+  }, []);
+
+  if (typeof document === "undefined") return null;
+  return createPortal(
+    <div
+      ref={panel}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="talk-card-title"
+      className="fixed inset-0 z-[80] flex flex-col bg-background"
+    >
+      <div className="flex shrink-0 items-center border-b border-border px-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2">
+        <button ref={closeButton} type="button" className="inline-flex min-h-12 items-center gap-1 rounded-2xl px-2 text-base font-semibold text-pine" onClick={onClose}>
+          <ChevronLeft className="size-5" aria-hidden="true" />
+          {label}
+        </button>
+      </div>
+      <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col overflow-y-auto px-4 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+        <p className="text-sm font-semibold text-pine">{t.talkChinese}</p>
+        <h2 id="talk-card-title" className="mt-3 text-4xl leading-tight font-semibold break-words sm:text-5xl">{card.textZh || card.text}</h2>
+        <p className="mt-6 text-sm font-semibold text-muted-foreground">{t.talkOriginal}</p>
+        <p className="mt-1 text-lg leading-snug break-words">{card.textCare || card.text}</p>
+        <div className="mt-8">
+          <AskLine lang="zh" />
+        </div>
+      </div>
+    </div>,
+    document.body,
   );
 }

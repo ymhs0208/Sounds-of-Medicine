@@ -1,18 +1,19 @@
+import { presentDrugText } from "./display-name";
 import type { Bag, Drug, DrugText, Lang } from "./types";
 
 export function drugText(drug: Drug, lang: Lang): DrugText {
-  if (lang !== "zh") {
-    const translated = drug.i18n?.[lang];
-    if (translated) return translated;
-  }
-  return {
-    name: drug.nameZh,
-    dose: drug.doseZh,
-    quantity: drug.quantityZh,
-    usage: drug.usageZh,
-    indication: drug.indicationZh,
-    warnings: drug.warningsZh,
-  };
+  const raw: DrugText =
+    lang !== "zh" && drug.i18n?.[lang]
+      ? drug.i18n[lang]
+      : {
+          name: drug.nameZh,
+          dose: drug.doseZh,
+          quantity: drug.quantityZh,
+          usage: drug.usageZh,
+          indication: drug.indicationZh,
+          warnings: drug.warningsZh,
+        };
+  return presentDrugText(drug, lang, raw);
 }
 
 export function hasTranslation(drug: Drug, lang: Lang): boolean {

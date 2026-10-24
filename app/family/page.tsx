@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { PageHeader } from "@/components/page-header";
 import { toast } from "sonner";
 import { AdherenceCard } from "@/components/adherence-card";
 import { FamilyShare } from "@/components/family-share";
@@ -25,11 +26,13 @@ export default function FamilyPage() {
 
   return (
     <div className="space-y-4 pb-8">
+      <PageHeader
+        kicker="家屬 · 繁體中文"
+        title={t.familyTitle}
+        lead={t.familyLead}
+        extra={name ? <p className="text-lg font-semibold">{t.printPatient}　{name}</p> : null}
+      />
       <div>
-        <p className="text-sm font-semibold text-pine">家屬 · 繁體中文</p>
-        <h1 className="text-3xl font-semibold">{t.familyTitle}</h1>
-        <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.familyLead}</p>
-        {name ? <p className="mt-2 text-lg font-semibold">{t.printPatient}　{name}</p> : null}
         {store.familyContact ? (
           <p className="mt-1 text-sm text-muted-foreground">{t.familyContactShow}　{store.familyContact}</p>
         ) : null}

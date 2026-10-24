@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { shareOnLine } from "@/components/liff-login";
+import { PageHeader } from "@/components/page-header";
 import { circleInvite, recoveryCode } from "@/lib/circle-crypto";
 import { circleCopy } from "@/lib/i18n/circle";
 import { lineCopy } from "@/lib/i18n/line";
@@ -89,22 +90,19 @@ export function CircleScreen() {
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-4 pb-8">
-      <div>
-        <h1 className="text-3xl font-semibold">{t.title}</h1>
-        <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.lead}</p>
-      </div>
+      <PageHeader title={t.title} lead={t.lead} />
       <section className="rounded-3xl bg-card p-4 ring-1 ring-border" aria-labelledby="sync-status-heading">
         <h2 id="sync-status-heading" className="text-base font-semibold">{t.syncTitle}</h2>
         <p className="mt-2 text-sm leading-relaxed" role="status">{status}</p>
         {circle.user ? <p className="mt-2 text-sm">{circle.user.name || circle.user.sub}</p> : null}
         {circle.login && !circle.user ? (
-          <a className="mt-3 inline-flex min-h-12 items-center rounded-2xl bg-[#06c755] px-4 font-semibold text-white" href="/api/auth/line/start">
+          <a className="mt-3 inline-flex min-h-12 items-center rounded-2xl bg-[#06c755] px-4 font-semibold text-[#062117]" href="/api/auth/line/start">
             {t.lineButton}
           </a>
         ) : null}
         {!circle.login ? (
           <p className="mt-3 text-sm leading-relaxed">
-            <span className="inline-flex min-h-12 items-center rounded-2xl bg-[#06c755] px-4 font-semibold text-white">{t.lineButton}</span>
+            <span className="inline-flex min-h-12 items-center rounded-2xl bg-[#06c755] px-4 font-semibold text-[#062117]">{t.lineButton}</span>
             <span className="mt-2 block text-muted-foreground">{t.lineUnavailable}</span>
           </p>
         ) : null}
@@ -153,7 +151,7 @@ export function CircleScreen() {
             <p className="mt-3 text-sm leading-relaxed text-amber-ink">{lineCopy[store.lang].shareWarn}</p>
             <button
               type="button"
-              className="mt-2 min-h-12 rounded-2xl bg-[#06c755] px-4 font-semibold text-white"
+              className="mt-2 min-h-12 rounded-2xl bg-[#06c755] px-4 font-semibold text-[#062117]"
               onClick={() => void shareOnLine(`${lineCopy[store.lang].shareWarn}\n${invite}`)}
             >
               {lineCopy[store.lang].share}

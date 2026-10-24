@@ -1,10 +1,15 @@
 import { isLang, type AppData, type Bag } from "./types";
 
+export const DATA_VERSION = 2;
+
 export const EMPTY_DATA: AppData = {
-  version: 1,
+  version: DATA_VERSION,
   onboarded: false,
   lang: "zh",
   consentAt: null,
+  consentVersion: null,
+  lastExportAt: null,
+  backupSnoozeUntil: null,
   patientName: "",
   familyContact: "",
   allergies: "",
@@ -20,12 +25,18 @@ export const EMPTY_DATA: AppData = {
   refillNotified: [],
 };
 
+function knownVersion(version: unknown): boolean {
+  return version === 1 || version === 2 || (typeof version === "number" && version > DATA_VERSION);
+}
+
+/** Keep saved bags across versions. Unknown future versions are not wiped or downgraded. */
 export function normalizeData(parsed: Partial<AppData> | null | undefined): AppData {
-  if (!parsed || parsed.version !== 1 || !Array.isArray(parsed.bags)) return EMPTY_DATA;
+  if (!parsed || !knownVersion(parsed.version) || !Array.isArray(parsed.bags)) return EMPTY_DATA;
+  const incoming = parsed.version;
   return {
     ...EMPTY_DATA,
     ...parsed,
-    version: 1,
+    version: typeof incoming === "number" && incoming > DATA_VERSION ? incoming : DATA_VERSION,
     lang: parsed.lang && isLang(parsed.lang) ? parsed.lang : "zh",
     patientName: typeof parsed.patientName === "string" ? parsed.patientName : "",
     familyContact: typeof parsed.familyContact === "string" ? parsed.familyContact : "",
@@ -42,6 +53,9 @@ export function normalizeData(parsed: Partial<AppData> | null | undefined): AppD
     refillNotified: Array.isArray(parsed.refillNotified) ? parsed.refillNotified : [],
     onboarded: Boolean(parsed.onboarded),
     consentAt: typeof parsed.consentAt === "string" ? parsed.consentAt : null,
+    consentVersion: typeof parsed.consentVersion === "string" ? parsed.consentVersion : null,
+    lastExportAt: typeof parsed.lastExportAt === "string" ? parsed.lastExportAt : null,
+    backupSnoozeUntil: typeof parsed.backupSnoozeUntil === "string" ? parsed.backupSnoozeUntil : null,
   };
 }
 
@@ -51,10 +65,37 @@ function isBag(value: unknown): value is Bag {
   return typeof bag.id === "string" && Array.isArray(bag.drugs);
 }
 
+/** JSON backup of saved fields only. The device key and in-memory store methods stay out. */
+export function backupJson(data: AppData, exportedAt = new Date().toISOString()): string {
+  const snapshot: AppData = {
+    version: data.version,
+    onboarded: data.onboarded,
+    lang: data.lang,
+    consentAt: data.consentAt,
+    consentVersion: data.consentVersion,
+    lastExportAt: exportedAt,
+    backupSnoozeUntil: data.backupSnoozeUntil,
+    patientName: data.patientName,
+    familyContact: data.familyContact,
+    allergies: data.allergies,
+    allergiesZh: data.allergiesZh,
+    largeText: data.largeText,
+    pictograms: data.pictograms,
+    bags: data.bags,
+    logs: data.logs,
+    reports: data.reports,
+    notified: data.notified,
+    symptoms: data.symptoms,
+    talks: data.talks,
+    refillNotified: data.refillNotified,
+  };
+  return JSON.stringify(snapshot, null, 2);
+}
+
 export function parseBackup(raw: string): AppData | null {
   try {
     const parsed = JSON.parse(raw) as Partial<AppData>;
-    if (parsed.version !== 1 || !Array.isArray(parsed.bags)) return null;
+    if (!knownVersion(parsed.version) || !Array.isArray(parsed.bags)) return null;
     return normalizeData(parsed);
   } catch {
     return null;

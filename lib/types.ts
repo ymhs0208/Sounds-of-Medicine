@@ -136,10 +136,14 @@ export type RefillNotice = {
 };
 
 export type AppData = {
-  version: 1;
+  version: number;
   onboarded: boolean;
   lang: Lang;
   consentAt: string | null;
+  /** Set when the person accepts the current notice. Null on data saved before that field existed. */
+  consentVersion: string | null;
+  lastExportAt: string | null;
+  backupSnoozeUntil: string | null;
   patientName: string;
   familyContact: string;
   allergies: string;

@@ -9,7 +9,9 @@ import {
   useRef,
   useState,
 } from "react";
-import { EMPTY_DATA, normalizeData, parseBackup } from "./backup";
+import { EMPTY_DATA, parseBackup } from "./backup";
+import { CONSENT_VERSION, clearReadyCookie, writeReadyCookie } from "./consent";
+import { clearStored, loadStored, saveStored } from "./storage";
 import { allDemoBags } from "./demo-data";
 import { admitBag, applyDose } from "./doses";
 import { uid } from "./id";
@@ -29,8 +31,6 @@ import type {
   TalkCard,
 } from "./types";
 import type { Slot } from "./slots";
-
-const STORAGE_KEY = "yaosheng.v1";
 
 type Store = AppData & {
   ready: boolean;
@@ -53,55 +53,38 @@ type Store = AppData & {
   addSymptom: (input: { kind: SymptomKind; note: string; noteZh: string; value?: string }) => void;
   addTalk: (card: Omit<TalkCard, "id" | "at">) => TalkCard;
   markRefillNotified: (notices: RefillNotice[]) => void;
+  noteExport: () => void;
+  snoozeBackup: (until: string) => void;
+  storageLocked: boolean;
 };
 
 const Ctx = createContext<Store | null>(null);
 
-function load(): AppData {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return EMPTY_DATA;
-    return normalizeData(JSON.parse(raw) as AppData);
-  } catch {
-    return EMPTY_DATA;
-  }
-}
-
-function persist(data: AppData) {
-  const json = JSON.stringify(data);
-  try {
-    localStorage.setItem(STORAGE_KEY, json);
-  } catch {
-    const slim: AppData = {
-      ...data,
-      bags: data.bags.map((bag) => {
-        const next = { ...bag };
-        delete next.photoDataUrl;
-        return next;
-      }),
-    };
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
-    } catch {
-      /* Keep the in-memory copy if the browser quota is still full. */
-    }
-  }
-}
-
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<AppData>(EMPTY_DATA);
   const [ready, setReady] = useState(false);
+  const [storageLocked, setStorageLocked] = useState(false);
   const ref = useRef(data);
   ref.current = data;
+  const writable = useRef(true);
 
   useEffect(() => {
-    setData(load());
-    setReady(true);
+    let cancelled = false;
+    void loadStored().then((loaded) => {
+      if (cancelled) return;
+      writable.current = loaded.writable;
+      setStorageLocked(!loaded.writable);
+      setData(loaded.data);
+      setReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
-    if (!ready) return;
-    persist(data);
+    if (!ready || !writable.current) return;
+    void saveStored(data);
   }, [data, ready]);
 
   const completeOnboarding = useCallback(
@@ -113,7 +96,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         patientName: input.patientName.trim(),
         familyContact: input.familyContact.trim(),
         consentAt: new Date().toISOString(),
+        consentVersion: CONSENT_VERSION,
       }));
+      writeReadyCookie();
     },
     [],
   );
@@ -299,8 +284,19 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const clearAll = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
+    clearStored();
+    clearReadyCookie();
+    writable.current = true;
+    setStorageLocked(false);
     setData(EMPTY_DATA);
+  }, []);
+
+  const noteExport = useCallback(() => {
+    setData((current) => ({ ...current, lastExportAt: new Date().toISOString() }));
+  }, []);
+
+  const snoozeBackup = useCallback((until: string) => {
+    setData((current) => ({ ...current, backupSnoozeUntil: until }));
   }, []);
 
   const value = useMemo<Store>(
@@ -326,6 +322,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       addSymptom,
       addTalk,
       markRefillNotified,
+      noteExport,
+      snoozeBackup,
+      storageLocked,
     }),
     [
       data,
@@ -349,6 +348,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       addSymptom,
       addTalk,
       markRefillNotified,
+      noteExport,
+      snoozeBackup,
+      storageLocked,
     ],
   );
 

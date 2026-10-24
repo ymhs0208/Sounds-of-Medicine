@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { Camera, MessageSquareText, Pill, Settings, SunMedium, Users } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { LANG_OPTIONS, ui } from "@/lib/i18n";
+import { launch } from "@/lib/i18n/launch";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -26,7 +27,7 @@ function CareFrame({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (store.ready && !store.onboarded) router.replace("/");
+    if (store.ready && !store.onboarded) router.replace("/start");
   }, [store.ready, store.onboarded, router]);
 
   if (!store.ready || !store.onboarded) return <Splash />;
@@ -72,6 +73,11 @@ function CareFrame({ children }: { children: React.ReactNode }) {
           <Settings className="size-5" />
         </Link>
       </header>
+      {store.storageLocked ? (
+        <p className="mx-4 mt-2 rounded-2xl bg-amber-bg p-3 text-sm leading-relaxed text-amber-ink" role="status">
+          {launch[store.lang].storageLocked}
+        </p>
+      ) : null}
       <main className="min-h-0 w-full min-w-0 flex-1 overflow-x-clip overflow-y-auto px-4 pt-2 pb-8">{children}</main>
       <nav className="no-print grid shrink-0 grid-cols-5 items-end border-t border-border bg-card px-1 pt-1 pb-[max(0.35rem,env(safe-area-inset-bottom))]">
         {items.map((item) => {
@@ -114,16 +120,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     pathname.startsWith("/visit/print") ||
     pathname.startsWith("/emergency/print") ||
     pathname.startsWith("/family/shared");
-  const onboard = pathname === "/";
+  const publicPage =
+    pathname === "/" ||
+    pathname.startsWith("/privacy") ||
+    pathname.startsWith("/terms") ||
+    pathname.startsWith("/disclaimer");
+  const onboard = pathname === "/start";
 
   if (print) {
     return <div className="min-h-dvh bg-white text-[#1c1915]">{children}</div>;
   }
 
+  if (publicPage || onboard) {
+    return (
+      <div className="flex min-h-dvh flex-col bg-background">
+        <div className="mx-auto flex w-full min-w-0 max-w-6xl flex-1 flex-col">{children}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       <div className="mx-auto flex w-full min-w-0 max-w-6xl flex-1 flex-col">
-        {onboard ? <main className="flex min-h-dvh w-full min-w-0 flex-1 flex-col">{children}</main> : <CareFrame>{children}</CareFrame>}
+        <CareFrame>{children}</CareFrame>
       </div>
     </div>
   );

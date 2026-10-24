@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { AskLine } from "@/components/ask-line";
 import { DoseMark } from "@/components/dose-mark";
 import { DuplicateBanner } from "@/components/duplicate-banner";
+import { BackupBanner } from "@/components/backup-banner";
 import { HomeTools } from "@/components/home-tools";
 import { Disclaimer } from "@/components/disclaimer";
 import { drugText, fill, formatLongDate, patientName, todayISO } from "@/lib/format";
@@ -66,6 +67,7 @@ export default function TodayPage() {
         </p>
       </div>
 
+      <BackupBanner />
       <HomeTools />
       <DuplicateBanner lang={store.lang} prominent />
       {refills.length ? (

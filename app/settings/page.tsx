@@ -14,10 +14,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { PushPanel } from "@/components/push-panel";
+import { backupJson } from "@/lib/backup";
 import { cabinetMode } from "@/lib/doses";
 import { fill, formatDateTime } from "@/lib/format";
 import { ui } from "@/lib/i18n";
 import { features } from "@/lib/i18n/features";
+import { launch } from "@/lib/i18n/launch";
 import { notificationSupport, requestNotifications } from "@/lib/notify";
 import { staticDemo } from "@/lib/routes";
 import { useStore } from "@/lib/store";
@@ -94,6 +97,7 @@ export default function SettingsPage() {
           {notificationSupport() === "granted" ? t.remindersOn : t.enableReminders}
         </Button>
       </section>
+      <PushPanel />
       <section className="rounded-3xl bg-amber-bg p-4 ring-1 ring-amber-ink/30">
         <h2 className="text-base font-semibold text-amber-ink">{t.demoTitle}</h2>
         <p className="mt-1 text-sm leading-relaxed text-amber-ink">{t.demoBody}</p>
@@ -137,18 +141,21 @@ export default function SettingsPage() {
         {store.consentAt ? (
           <p className="mt-2 text-sm">{fill(t.consentOn, { time: formatDateTime(store.consentAt, store.lang) })}</p>
         ) : null}
+        {store.consentVersion ? <p className="text-sm">{store.consentVersion}</p> : null}
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{launch[store.lang].backupBody}</p>
         <Button
           type="button"
           variant="outline"
           className="mt-3 h-12 w-full rounded-2xl"
           onClick={() => {
-            const blob = new Blob([JSON.stringify(store, null, 2)], { type: "application/json" });
+            const blob = new Blob([backupJson(store)], { type: "application/json" });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = url;
             link.download = "yaosheng-backup.json";
             link.click();
             URL.revokeObjectURL(url);
+            store.noteExport();
           }}
         >
           {t.exportJson}
@@ -177,6 +184,11 @@ export default function SettingsPage() {
       <section className="rounded-3xl bg-card p-4 ring-1 ring-border">
         <h2 className="text-base font-semibold">{t.about}</h2>
         <p className="mt-2 text-sm leading-relaxed">{t.aboutBody}</p>
+        <nav className="mt-3 flex flex-col gap-1 text-base font-semibold">
+          <Link className="inline-flex min-h-11 items-center underline" href="/privacy">{launch[store.lang].privacy}</Link>
+          <Link className="inline-flex min-h-11 items-center underline" href="/terms">{launch[store.lang].terms}</Link>
+          <Link className="inline-flex min-h-11 items-center underline" href="/disclaimer">{launch[store.lang].disclaimer}</Link>
+        </nav>
       </section>
       <Disclaimer lang={store.lang} />
       <Dialog open={open} onOpenChange={setOpen}>

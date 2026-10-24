@@ -17,7 +17,9 @@ const viewports = [
 ].filter((viewport) => !process.env.VIEWPORTS || process.env.VIEWPORTS.split(",").includes(viewport.name));
 
 const routes = [
-  { path: "/", name: "home" },
+  { path: "/privacy", name: "privacy" },
+  { path: "/terms", name: "terms" },
+  { path: "/disclaimer", name: "disclaimer" },
   { path: "/today", name: "today" },
   { path: "/meds", name: "meds" },
   { path: "/meds/card?id=drug-long", name: "meds-card" },
@@ -246,6 +248,7 @@ function seedScript() {
     notified: [],
   };
   localStorage.setItem("yaosheng.v1", JSON.stringify(data));
+  document.cookie = "yaosheng-ready=1; Path=/";
 }
 
 async function measure(page) {
@@ -336,16 +339,22 @@ async function main() {
       });
       const page = await onboard.newPage();
       await page.goto(`${base}/`, { waitUntil: "networkidle" });
-      const file = path.join(outDir, `${viewport.name}-onboarding.png`);
+      const file = path.join(outDir, `${viewport.name}-landing.png`);
       const result = await shoot(page, file);
-      shots.push({ viewport: viewport.name, route: "/onboarding", ...result });
-      if (result.overflow) failures.push({ viewport: viewport.name, route: "/onboarding", ...result });
+      shots.push({ viewport: viewport.name, route: "/", ...result });
+      if (result.overflow) failures.push({ viewport: viewport.name, route: "/", ...result });
+      await page.goto(`${base}/start`, { waitUntil: "networkidle" });
+      const startFile = path.join(outDir, `${viewport.name}-onboarding.png`);
+      const startResult = await shoot(page, startFile);
+      shots.push({ viewport: viewport.name, route: "/start", ...startResult });
+      if (startResult.overflow) failures.push({ viewport: viewport.name, route: "/start", ...startResult });
       await onboard.close();
 
       const ready = await browser.newContext({
         viewport: { width: viewport.width, height: viewport.height },
         deviceScaleFactor: 1,
       });
+      await ready.addCookies([{ name: "yaosheng-ready", value: "1", url: base }]);
       await ready.addInitScript(seedScript);
       for (const route of routes) {
         const routed = await ready.newPage();
@@ -364,6 +373,7 @@ async function main() {
       deviceScaleFactor: 1,
       colorScheme: "dark",
     });
+    await dark.addCookies([{ name: "yaosheng-ready", value: "1", url: base }]);
     await dark.addInitScript(seedScript);
     for (const route of routes) {
       const page = await dark.newPage();
@@ -380,6 +390,7 @@ async function main() {
       viewport: { width: 794, height: 1123 },
       deviceScaleFactor: 1,
     });
+    await printContext.addCookies([{ name: "yaosheng-ready", value: "1", url: base }]);
     await printContext.addInitScript(seedScript);
     const printPage = await printContext.newPage();
     await printPage.goto(`${base}/family/print`, { waitUntil: "networkidle" });
@@ -404,6 +415,7 @@ async function main() {
     await printContext.close();
 
     const flow = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
+    await flow.addCookies([{ name: "yaosheng-ready", value: "1", url: base }]);
     await flow.addInitScript(seedScript);
     const talk = await flow.newPage();
     await talk.goto(`${base}/talk`, { waitUntil: "networkidle" });

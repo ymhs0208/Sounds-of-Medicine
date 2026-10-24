@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans, Noto_Sans_TC, Noto_Sans_Thai } from "next/font/google";
 import { Providers } from "@/components/providers";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const noto = Noto_Sans({
@@ -25,10 +26,19 @@ const thai = Noto_Sans_Thai({
 });
 
 export const metadata: Metadata = {
-  title: "藥聲 YaoSheng",
+  metadataBase: new URL(siteUrl),
+  title: { default: "藥聲 YaoSheng", template: "%s｜藥聲" },
   description: "外籍看護的藥袋語音助手。只翻譯並朗讀藥袋上的文字，不提供醫療建議。",
   applicationName: "藥聲",
   manifest: "/manifest.json",
+  openGraph: {
+    title: "藥聲 YaoSheng",
+    description: "把藥袋上的字，說成你聽得懂的話。",
+    url: siteUrl,
+    siteName: "藥聲",
+    locale: "zh_TW",
+    type: "website",
+  },
   appleWebApp: { capable: true, title: "藥聲", statusBarStyle: "black-translucent" },
   icons: {
     icon: [

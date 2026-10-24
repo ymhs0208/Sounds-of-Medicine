@@ -86,11 +86,11 @@ cd out && python3 -m http.server 8765
 
 沒有金鑰就上傳照片時，伺服器回 503，畫面會請你改手動輸入。它不會假裝已經讀到藥袋。手動輸入後若要自動翻譯，同樣需要這把金鑰。
 
-提醒只在藥聲開著時會響。iPhone 鎖定或關掉瀏覽器之後不會在背景響鈴。已餵藥與漏吃存在這支手機，設定裡可以匯出或匯入 JSON 備份，也可以清除全部資料。
+藥聲開著時會在頁面上提醒。若要在關掉之後仍提醒，需依 [LAUNCH.md](LAUNCH.md) 設定 VAPID 與 KV；只保存鐘點和語言，不保存藥名。已餵藥與漏吃存在這支手機，設定裡可以匯出或匯入 JSON 備份，也可以清除全部資料。本機副本可用這支裝置的 WebCrypto 金鑰加密後再寫入。
 
 ## 部署到 Cloudflare Workers
 
-專案用 OpenNext 跑在名為 `sounds-of-medicine` 的 Worker 上。`wrangler.jsonc` 的 `name` 與 `WORKER_SELF_REFERENCE` 都是這個名稱。
+專案用 OpenNext 跑在名為 `sounds-of-medicine` 的 Worker 上。`wrangler.jsonc` 的 `name` 與 `WORKER_SELF_REFERENCE` 都是這個名稱。部署進入點是 `cloudflare/worker.ts`：它轉送網頁請求，並在 Cron 觸發時送出背景提醒。環境變數、KV、Turnstile、網域與上線前要人工填的項目見 [LAUNCH.md](LAUNCH.md)。
 
 Workers Builds 請分開設定：
 
@@ -117,7 +117,13 @@ npm run cf-typegen  # 產生 CloudflareEnv 型別
 
 若部署把儀表板上的變數清掉，把部署指令改成 `npx wrangler deploy --keep-vars`。
 
-家屬短連結是選用的。`wrangler.jsonc` 裡的 `YAOSHENG_SYNC`（KV）和 `YAOSHENG_SYNC_ENABLED` 維持註解，部署不會因為少這個 namespace 失敗。要啟用時建立 KV namespace、取消那兩段註解、把 id 填上再部署。沒有這個 binding 時，分享仍用加密連結，應用程式其他功能不受影響。
+家屬短連結、付費介面的 KV 計數、Web Push 訂閱都是選用的。`wrangler.jsonc` 裡的 KV 與 Rate Limiting 維持註解，部署不會因為少 namespace 失敗。要啟用時建立資源、取消註解、把 id 填上再部署。沒有這些 binding 時，分享仍用加密連結，辨識仍有每個 isolate 的記憶體限流，App 開著時的提醒也還在。
+
+背景提醒的 VAPID 金鑰用 `node scripts/generate-vapid.mjs` 產生，只放進 Worker Secret。
+
+## 以後包成 App Store / Google Play
+
+`capacitor.config.ts` 把應用程式 id 設為 `tw.yaosheng.app`，名稱為藥聲，網站目錄為 `out/`（`npm run build:static` 的靜態輸出）。這份儲存庫還沒有 `ios/` 或 `android/`。之後要包時再安裝 Capacitor，執行 `npx cap add ios` 與 `npx cap add android`，並用正式網址或靜態輸出同步。送審前仍要換掉法律文件的 `【待填】`。
 
 ## 評審示範腳本（約五分鐘）
 
@@ -150,7 +156,7 @@ npm run cf-typegen  # 產生 CloudflareEnv 型別
 
 - 示範藥袋是虛構患者與示意標示，不能當成真實處方。
 - 瀏覽器語音依手機而定。泰語、菲律賓語可能沒有語音引擎，此時改看畫面上的字。
-- 通知在網頁開著時可用。手機鎖定後的定時提醒受瀏覽器限制，這份原型不保證背景響鈴。
+- 關掉 App 後的提醒需要 VAPID、KV，以及支援 Web Push 的瀏覽器（Android Chrome、桌面 Chrome / Edge、iOS 16.4 以上且已加入主畫面）。沒設定時只在藥聲開著時提醒。
 - 換手機或清除瀏覽器資料後，藥袋不會跟著走。
 - 拍照辨識可能看錯。必須人工核對後才收入藥櫃；沒有金鑰就不會假造辨識結果。
 - 藥聲不取代醫師或藥師。

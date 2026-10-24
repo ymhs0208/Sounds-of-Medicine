@@ -1,0 +1,6 @@
+# Copy to .dev.vars for `npm run preview`. Do not commit .dev.vars.
+# `next dev` still reads .env.local. Leave OPENAI_API_KEY blank for demo mode.
+NEXTJS_ENV=development
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4o-mini
+OPENAI_BASE_URL=https://api.openai.com/v1

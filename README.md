@@ -69,6 +69,35 @@ cd out && python3 -m http.server 8765
 
 沒有金鑰就上傳照片時，App 會說明目前不能辨識，並請改用示範藥袋。它不會假裝已經讀到藥袋。
 
+## 部署到 Cloudflare Workers
+
+專案用 OpenNext 跑在名為 `sounds-of-medicine` 的 Worker 上。`wrangler.jsonc` 的 `name` 與 `WORKER_SELF_REFERENCE` 都是這個名稱。
+
+Workers Builds 請分開設定：
+
+- 建置指令：`npx opennextjs-cloudflare build`（會先跑 `npm run build`，再產出 `.open-next/`）
+- 部署指令：`npx wrangler deploy`
+
+本機：
+
+```bash
+npm run preview     # 在 Workers 執行環境預覽
+npm run deploy      # 建置並部署
+npm run cf-typegen  # 產生 CloudflareEnv 型別
+```
+
+拍照辨識要在儀表板設定**執行階段**變數，不要寫進 git。Workers & Pages → `sounds-of-medicine` → Settings → Variables and Secrets：
+
+- `OPENAI_API_KEY`：類型選 Secret。不設定就是示範模式。
+- `OPENAI_MODEL`（選用，預設 `gpt-4o-mini`）
+- `OPENAI_BASE_URL`（選用，預設 `https://api.openai.com/v1`）
+
+`compatibility_date` 為 `2026-10-19` 且已開啟 `nodejs_compat`，所以上面的值在 Worker 裡可以從 `process.env` 讀到。
+
+本機 Wrangler 預覽：`cp .dev.vars.example .dev.vars` 再填金鑰。`.dev.vars` 不會進版控。`npm run dev` 仍使用 `.env.local`。
+
+若部署把儀表板上的變數清掉，把部署指令改成 `npx wrangler deploy --keep-vars`。
+
 ## 評審示範腳本（約五分鐘）
 
 建議用手機寬度，或直接用電腦：寬螢幕左側有評審提詞，右側是手機畫面。

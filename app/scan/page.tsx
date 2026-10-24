@@ -11,6 +11,7 @@ import { DEMO_CAPTION, DEMO_ORDER, getDemoBag, type DemoKey } from "@/lib/demo-d
 import { compressImage } from "@/lib/images";
 import { ui } from "@/lib/i18n";
 import { setPending } from "@/lib/pending";
+import { staticDemo } from "@/lib/routes";
 import { useStore } from "@/lib/store";
 import type { Extraction } from "@/lib/extraction";
 
@@ -24,6 +25,7 @@ export default function ScanPage() {
   const [llm, setLlm] = useState(false);
 
   useEffect(() => {
+    if (staticDemo) return;
     fetch("/api/status")
       .then((response) => response.json())
       .then((body: { llm?: boolean }) => setLlm(Boolean(body.llm)))
@@ -39,6 +41,10 @@ export default function ScanPage() {
 
   async function onFile(file: File | undefined) {
     if (!file) return;
+    if (staticDemo) {
+      toast(t.staticNoOcr);
+      return;
+    }
     setBusy("photo");
     try {
       const imageDataUrl = await compressImage(file);
@@ -77,6 +83,11 @@ export default function ScanPage() {
         <h1 className="text-3xl font-semibold">{t.scanTitle}</h1>
         <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.scanLead}</p>
       </div>
+      {staticDemo ? (
+        <p className="rounded-2xl bg-amber-bg px-4 py-3 text-base font-semibold leading-relaxed text-amber-ink">
+          {t.staticNoOcr}
+        </p>
+      ) : null}
       <div className="grid grid-cols-2 gap-2">
         <Button type="button" className="h-14 rounded-2xl text-base" onClick={() => cameraRef.current?.click()}>
           <Camera className="size-5" />

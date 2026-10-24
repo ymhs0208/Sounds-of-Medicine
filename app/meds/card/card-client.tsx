@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { BagFace } from "@/components/bag-artwork";
 import { Bilingual } from "@/components/bilingual";
@@ -22,14 +22,15 @@ import { drugText, hasTranslation, rocLabel } from "@/lib/format";
 import { ui } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 
-export default function MedicineCardPage() {
-  const params = useParams<{ id: string }>();
+export default function MedicineCardClient() {
+  const params = useSearchParams();
   const router = useRouter();
   const store = useStore();
   const t = ui[store.lang];
   const [open, setOpen] = useState(false);
   const [showBag, setShowBag] = useState(false);
-  const found = store.bags.flatMap((bag) => bag.drugs.map((drug) => ({ bag, drug }))).find((item) => item.drug.id === params.id);
+  const drugId = params.get("id") ?? "";
+  const found = store.bags.flatMap((bag) => bag.drugs.map((drug) => ({ bag, drug }))).find((item) => item.drug.id === drugId);
 
   if (!store.ready) return null;
   if (!found) {

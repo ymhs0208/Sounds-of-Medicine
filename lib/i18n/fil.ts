@@ -52,6 +52,7 @@ export const fil: UiPack = {
   orSamples: "Halimbawang supot",
   reading: "Binabasa ang nakasulat sa supot",
   noKey: "Walang susi para sa pagbasa, kaya hindi mabasa ang larawang ito. Gamitin ang halimbawang supot, o itakda ang susi ayon sa gabay.",
+  staticNoOcr: "Hindi naka-on ang pagbasa ng larawan sa demo. Gamitin ang halimbawang supot.",
   extractFail: "Hindi nabasa ang larawang ito. Kunan muli, o gamitin ang halimbawang supot.",
   unreadable: "Hindi sapat ang linaw ng letra, kaya kulang ang maipapakitang hanay. Kunan muli.",
   cameraDenied: "Hindi magamit ang camera. Pumili sa album, o gamitin ang halimbawang supot.",

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { replyLabel, reportSentence } from "@/lib/copy";
 import { drugText, formatDateTime, patientName } from "@/lib/format";
 import { ui } from "@/lib/i18n";
+import { drugPath } from "@/lib/routes";
 import { useStore } from "@/lib/store";
 import type { ReplyTemplate } from "@/lib/types";
 
@@ -39,7 +40,7 @@ export default function FamilyPage() {
           <div className="space-y-2">
             {store.bags.flatMap((bag) =>
               bag.drugs.map((drug) => (
-                <Link key={drug.id} href={`/meds/${drug.id}`} className="block rounded-2xl bg-card px-4 py-3 ring-1 ring-border">
+                <Link key={drug.id} href={drugPath(drug.id)} className="block rounded-2xl bg-card px-4 py-3 ring-1 ring-border">
                   <div className="font-semibold">{drugText(drug, "zh").name}</div>
                   <div className="text-sm text-muted-foreground">
                     {bag.hospitalShort} · {drug.usageZh}

@@ -11,6 +11,7 @@ import { getDemoBag, isDemoKey } from "@/lib/demo-data";
 import { drugText, hasTranslation, namesDiffer, rocLabel } from "@/lib/format";
 import { ui } from "@/lib/i18n";
 import { readPending, type Pending } from "@/lib/pending";
+import { drugPath } from "@/lib/routes";
 import { useStore } from "@/lib/store";
 import type { Bag } from "@/lib/types";
 
@@ -108,7 +109,7 @@ export default function ReviewClient() {
           }
           toast(t.added);
           const first = bag.drugs[0];
-          router.push(first ? `/meds/${first.id}` : "/meds");
+          router.push(first ? drugPath(first.id) : "/meds");
         }}
       >
         {saved ? t.alreadyInCabinet : t.addCabinet}

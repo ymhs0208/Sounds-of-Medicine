@@ -4,6 +4,7 @@ import Link from "next/link";
 import { DuplicateBanner } from "@/components/duplicate-banner";
 import { duplicateDrugIds } from "@/lib/duplicates";
 import { drugText, fill, patientName } from "@/lib/format";
+import { drugPath } from "@/lib/routes";
 import { ui } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 
@@ -37,7 +38,7 @@ export default function MedsPage() {
               {bag.drugs.map((drug) => {
                 const text = drugText(drug, store.lang);
                 return (
-                  <Link key={drug.id} href={`/meds/${drug.id}`} className="block rounded-2xl px-2 py-3 hover:bg-secondary">
+                  <Link key={drug.id} href={drugPath(drug.id)} className="block rounded-2xl px-2 py-3 hover:bg-secondary">
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <div className="text-lg font-semibold leading-tight">{text.name}</div>

@@ -27,7 +27,19 @@ npm run dev
 npm test          # 重複藥與今日時間軸
 npm run lint
 npm run build && npm start   # 正式模式，會註冊簡易 PWA
+npm run build:static         # 純靜態展示包，產出 out/
 ```
+
+## 手機上的靜態展示
+
+`npm run build:static` 會做出不含後端的網站，放在 `out/`。把這個資料夾放到任何靜態檔案伺服器的根目錄即可，手機瀏覽器直接開首頁。
+
+```bash
+npm run build:static
+cd out && python3 -m http.server 8765
+```
+
+這包固定是示範模式。點拍照或從相簿選圖時，不會呼叫辨識介面，畫面上會寫「展示版未開啟拍照辨識」。請改用四包示範藥袋。藥卡網址用查詢參數（`/meds/card/?id=...`），重新整理也不需要伺服器把所有路徑轉回同一頁。
 
 ## 示範模式
 

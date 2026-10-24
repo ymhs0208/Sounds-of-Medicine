@@ -9,6 +9,7 @@ import { drugText, fill, formatLongDate, patientName, todayISO } from "@/lib/for
 import { ui, slotLabel } from "@/lib/i18n";
 import { notificationSupport, requestNotifications, showNotification } from "@/lib/notify";
 import { SLOT_TIME } from "@/lib/slots";
+import { drugPath } from "@/lib/routes";
 import { buildTimeline, groupTimeline } from "@/lib/schedule";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -105,7 +106,7 @@ export default function TodayPage() {
                           item.status === "missed" && "ring-rose/40",
                         )}
                       >
-                        <Link href={`/meds/${item.drug.id}`} className="block">
+                        <Link href={drugPath(item.drug.id)} className="block">
                           <div className="flex items-start justify-between gap-3">
                             <div>
                               <h3 className="text-xl font-semibold leading-tight">{text.name}</h3>

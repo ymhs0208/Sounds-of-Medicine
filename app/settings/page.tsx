@@ -16,6 +16,7 @@ import {
 import { fill, formatDateTime } from "@/lib/format";
 import { ui } from "@/lib/i18n";
 import { notificationSupport, requestNotifications } from "@/lib/notify";
+import { staticDemo } from "@/lib/routes";
 import { useStore } from "@/lib/store";
 
 export default function SettingsPage() {
@@ -26,6 +27,7 @@ export default function SettingsPage() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    if (staticDemo) return;
     fetch("/api/status")
       .then((response) => response.json())
       .then((body: { llm?: boolean }) => setLlm(Boolean(body.llm)))
@@ -49,8 +51,10 @@ export default function SettingsPage() {
       </section>
       <section className="rounded-3xl bg-card p-4 ring-1 ring-border">
         <h2 className="text-base font-semibold">{t.llmStatus}</h2>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{llm ? t.llmOnBody : t.llmOffBody}</p>
-        <p className="mt-2 text-sm font-semibold text-pine">{llm ? t.llmMode : t.demoMode}</p>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          {staticDemo ? t.staticNoOcr : llm ? t.llmOnBody : t.llmOffBody}
+        </p>
+        <p className="mt-2 text-sm font-semibold text-pine">{!staticDemo && llm ? t.llmMode : t.demoMode}</p>
       </section>
       <section className="rounded-3xl bg-card p-4 ring-1 ring-border">
         <h2 className="text-base font-semibold">{t.reminders}</h2>

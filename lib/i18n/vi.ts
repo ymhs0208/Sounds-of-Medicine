@@ -52,6 +52,7 @@ export const vi: UiPack = {
   orSamples: "Túi thuốc mẫu",
   reading: "Đang đọc chữ trên túi thuốc",
   noKey: "Chưa có khóa nhận dạng nên không đọc được ảnh này. Hãy dùng túi mẫu, hoặc đặt khóa theo hướng dẫn.",
+  staticNoOcr: "Bản trình diễn chưa bật đọc ảnh. Hãy dùng túi mẫu.",
   extractFail: "Ảnh này đọc không thành công. Chụp lại, hoặc dùng túi mẫu.",
   unreadable: "Chữ chưa đủ rõ, không đủ mục để hiện. Hãy chụp lại.",
   cameraDenied: "Không dùng được máy ảnh. Hãy chọn từ thư viện, hoặc dùng túi mẫu.",

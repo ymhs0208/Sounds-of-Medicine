@@ -8,6 +8,7 @@ import { useEffect } from "react";
 function RegisterServiceWorker() {
   useEffect(() => {
     if (process.env.NODE_ENV !== "production") return;
+    if (process.env.NEXT_PUBLIC_STATIC === "1") return;
     if (!("serviceWorker" in navigator)) return;
     navigator.serviceWorker.register("/sw.js").catch(() => undefined);
   }, []);

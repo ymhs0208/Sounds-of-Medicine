@@ -52,6 +52,7 @@ export const id: UiPack = {
   orSamples: "Kemasan contoh",
   reading: "Sedang membaca tulisan pada kemasan",
   noKey: "Kunci pengenalan belum diatur, jadi foto ini tidak bisa dibaca. Pakai kemasan contoh, atau atur kunci sesuai petunjuk.",
+  staticNoOcr: "Versi demo belum membuka pembacaan foto. Gunakan kemasan contoh.",
   extractFail: "Foto ini tidak berhasil dibaca. Ambil ulang, atau pakai kemasan contoh.",
   unreadable: "Tulisannya kurang jelas, jadi tidak cukup kolom untuk ditampilkan. Ambil ulang.",
   cameraDenied: "Kamera tidak bisa dipakai. Pilih dari galeri, atau pakai kemasan contoh.",

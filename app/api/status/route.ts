@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { lineConfigured } from "@/lib/line-auth";
+import { messagingConfigured } from "@/lib/line-bot";
 import { vapidReady } from "@/lib/push-kv";
 
 export function GET() {
@@ -12,5 +14,8 @@ export function GET() {
     sentry: Boolean(process.env.SENTRY_DSN),
     analytics: Boolean(process.env.CF_ANALYTICS_TOKEN),
     analyticsToken: process.env.CF_ANALYTICS_TOKEN || undefined,
+    lineLogin: lineConfigured(),
+    lineMessaging: messagingConfigured(),
+    liffId: process.env.LINE_LIFF_ID || undefined,
   });
 }

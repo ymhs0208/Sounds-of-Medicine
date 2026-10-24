@@ -24,6 +24,11 @@ function matches(bytes: Uint8Array, mime: string): boolean {
   return false;
 }
 
+export function checkImageBytes(bytes: Uint8Array, mime: string): boolean {
+  if (bytes.byteLength < 12 || bytes.byteLength > MAX_DECODED_BYTES) return false;
+  return matches(bytes, mime);
+}
+
 /** Accept only a real JPEG, PNG, or WebP data URL under the size cap. */
 export function checkImageDataUrl(value: string): ImageCheck {
   if (value.length > MAX_IMAGE_CHARS) return { ok: false };

@@ -245,6 +245,7 @@ export function d1Store(db: CircleDatabase) {
       };
     },
     async deleteAccount(sub: string) {
+      const deletedCircles: string[] = [];
       const memberships = await db.all<MemberSql>(
         "SELECT id, circle_id, line_sub, display_name, role, removed_at FROM members WHERE line_sub = ?",
         sub,
@@ -256,6 +257,7 @@ export function d1Store(db: CircleDatabase) {
         );
         const alive = active.filter((item) => item.line_sub !== sub);
         if (alive.length === 0) {
+          deletedCircles.push(membership.circle_id);
           await db.exec("DELETE FROM records WHERE circle_id = ?", membership.circle_id);
           await db.exec("DELETE FROM members WHERE circle_id = ?", membership.circle_id);
           await db.exec("DELETE FROM circles WHERE id = ?", membership.circle_id);
@@ -269,6 +271,7 @@ export function d1Store(db: CircleDatabase) {
         }
       }
       await db.exec("DELETE FROM users WHERE line_sub = ?", sub);
+      return { deletedCircles };
     },
   };
 }
@@ -385,10 +388,12 @@ export function memoryStore(): CircleStore {
       return { generation: mine.generation, members: mine.members, records };
     },
     async deleteAccount(sub: string) {
+      const deletedCircles: string[] = [];
       const memberships = data.members.filter((member) => member.lineSub === sub);
       for (const membership of memberships) {
         const alive = data.members.filter((member) => member.circleId === membership.circleId && !member.removedAt && member.lineSub !== sub);
         if (alive.length === 0) {
+          deletedCircles.push(membership.circleId);
           data.records = data.records.filter((record) => record.circleId !== membership.circleId);
           data.members = data.members.filter((member) => member.circleId !== membership.circleId);
           data.circles = data.circles.filter((circle) => circle.id !== membership.circleId);
@@ -403,6 +408,7 @@ export function memoryStore(): CircleStore {
         }
       }
       data.users = data.users.filter((user) => user.sub !== sub);
+      return { deletedCircles };
     },
   };
   return store;

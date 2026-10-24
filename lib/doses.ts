@@ -1,5 +1,6 @@
 import { bagActiveOn } from "./bag-draft";
 import { duplicateDrugIds } from "./duplicates";
+import type { DoseEvent } from "./line-events";
 import { SLOT_ORDER, SLOT_TIME, type Slot } from "./slots";
 import type { AppData, Bag, DoseLog, DoseNotice, DoseStatus, Drug, Report } from "./types";
 
@@ -108,6 +109,32 @@ export function applyDose(
     at: input.at,
   };
   return { ...current, logs: [...logs, log], reports: [...reports, report] };
+}
+
+/** Merges a signed LINE postback. A newer local tap wins. Without a drug id, the slot applies to every medicine due then. */
+export function applyLineDoses(current: AppData, events: DoseEvent[]): AppData {
+  let next = current;
+  for (const event of events) {
+    const status: DoseStatus = event.action === "taken" ? "given" : "missed";
+    const targets = event.drugId
+      ? [event.drugId]
+      : buildTimeline(next.bags, next.logs, event.date)
+          .filter((item) => item.slot === event.slot)
+          .map((item) => item.drug.id);
+    for (const drugId of [...new Set(targets)]) {
+      const existing = next.logs.find((log) => log.drugId === drugId && log.date === event.date && log.slot === event.slot);
+      if (existing && existing.at >= event.at) continue;
+      next = applyDose(next, {
+        drugId,
+        slot: event.slot,
+        status,
+        date: event.date,
+        at: event.at,
+        reportId: `line-${event.date}-${event.slot}-${drugId}`,
+      });
+    }
+  }
+  return next;
 }
 
 export function dueItems(items: TimelineItem[], date: string, now: Date, notified: DoseNotice[]): TimelineItem[] {

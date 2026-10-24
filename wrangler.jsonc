@@ -1,7 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "sounds-of-medicine",
-  "main": ".open-next/worker.js",
+  // Cron wrapper. `npx opennextjs-cloudflare build` must run first; deploy then bundles this file.
+  "main": "cloudflare/worker.ts",
   "compatibility_date": "2026-10-19",
   "compatibility_flags": [
     "nodejs_compat",
@@ -23,14 +24,40 @@
   },
   "observability": {
     "enabled": true
+  },
+  // Fires even when push KV is absent. The handler does nothing until VAPID and YAOSHENG_PUSH are set.
+  "triggers": {
+    "crons": ["*/15 * * * *"]
   }
-  // Optional family sync. Leave this commented out so deploy does not require a KV namespace.
-  // The app already shares an encrypted link with the key in the URL fragment.
-  // To turn on short links: create a KV namespace, uncomment both blocks, and redeploy.
-  // "vars": {
-  //   "YAOSHENG_SYNC_ENABLED": "1"
-  // },
+  // Optional bindings. Leave every block below commented out so `npx wrangler deploy` does not
+  // require a namespace that has not been created. The app keeps working without them.
+  //
+  // Family share short links (AES-GCM key stays in the URL fragment either way):
+  // "vars": { "YAOSHENG_SYNC_ENABLED": "1" },
   // "kv_namespaces": [
   //   { "binding": "YAOSHENG_SYNC", "id": "replace-with-namespace-id" }
-  // ]
+  // ],
+  //
+  // Paid-route counters. Per-IP and per-device limits also fall back to memory in each isolate.
+  // "vars": { "YAOSHENG_LIMITS_ENABLED": "1" },
+  // "kv_namespaces": [
+  //   { "binding": "YAOSHENG_LIMITS", "id": "replace-with-namespace-id" }
+  // ],
+  //
+  // Cloudflare Rate Limiting binding. namespace_id is a number you choose; no separate resource.
+  // Uncomment to enforce a global limit in addition to the memory/KV windows.
+  // "ratelimits": [
+  //   { "name": "YAOSHENG_RATE_LIMIT", "namespace_id": "1001", "simple": { "limit": 20, "period": 60 } }
+  // ],
+  //
+  // Web Push subscriptions. Values are a device id, clock times, language, and the push endpoint.
+  // Drug names and patient names are not stored. Also set secrets VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT.
+  // "vars": { "YAOSHENG_PUSH_ENABLED": "1" },
+  // "kv_namespaces": [
+  //   { "binding": "YAOSHENG_PUSH", "id": "replace-with-namespace-id" }
+  // ],
+  //
+  // Turnstile is off until both secrets exist: TURNSTILE_SECRET_KEY and TURNSTILE_SITE_KEY.
+  // Sentry is off until SENTRY_DSN is set. Analytics is off until CF_ANALYTICS_TOKEN is set.
+  // None of those are bindings, so a missing secret does not fail deploy.
 }

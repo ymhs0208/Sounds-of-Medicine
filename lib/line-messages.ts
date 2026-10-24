@@ -252,11 +252,11 @@ export type PreviewCard = { title: string; lines: string[]; buttons: string[] };
 export function previewCards(lang: Lang): PreviewCard[] {
   const dose = doseFlex({ lang, time: "08:00", dataTaken: "a=taken", dataSkip: "a=skip", detail: undefined });
   return [
-    { title: dose.altText, lines: [LINE_DOSE[lang], "08:00", LINE_DISCLAIMER[lang]], buttons: [LINE_TAKEN[lang], LINE_SKIP[lang]] },
-    { title: missedText(lang), lines: [missedText(lang), LINE_DISCLAIMER[lang]], buttons: [] },
+    { title: dose.altText, lines: ["08:00", LINE_DISCLAIMER[lang]], buttons: [LINE_TAKEN[lang], LINE_SKIP[lang]] },
+    { title: missedText(lang), lines: [LINE_DISCLAIMER[lang]], buttons: [] },
     {
       title: digestTitle(lang),
-      lines: [digestTitle(lang), digestBody(lang, 2, 4, 1, 6), LINE_DISCLAIMER[lang]],
+      lines: [digestBody(lang, 2, 4, 1, 6), LINE_DISCLAIMER[lang]],
       buttons: [],
     },
   ];

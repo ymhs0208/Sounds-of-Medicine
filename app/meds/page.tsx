@@ -2,15 +2,46 @@
 
 import Link from "next/link";
 import { Pill } from "lucide-react";
+import { ClampText } from "@/components/clamp-text";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { DuplicateBanner } from "@/components/duplicate-banner";
 import { duplicateDrugIds } from "@/lib/duplicates";
-import { drugText, fill, patientName } from "@/lib/format";
+import { chineseNote, drugText, fill, patientName } from "@/lib/format";
+import { features } from "@/lib/i18n/features";
 import { drugPath } from "@/lib/routes";
 import { ui } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
+import type { Drug, Lang } from "@/lib/types";
+
+function MedDrug({ drug, lang, duplicate }: { drug: Drug; lang: Lang; duplicate: boolean }) {
+  const text = drugText(drug, lang);
+  const t = ui[lang];
+  const ft = features[lang];
+  const nameZh = chineseNote(lang, text.name, drug.nameZh);
+  const indicationZh = chineseNote(lang, text.indication, drug.indicationZh);
+  const usageZh = chineseNote(lang, text.usage, drug.usageZh);
+  return (
+    <div className="rounded-2xl px-2 py-3 hover:bg-secondary">
+      <Link href={drugPath(drug.id)} className="block">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <div className="ys-name text-lg font-semibold leading-snug">{text.name}</div>
+            {nameZh ? <div className="text-xs text-muted-foreground">{nameZh}</div> : null}
+            {text.indication ? <div className="text-sm leading-snug text-muted-foreground">{text.indication}</div> : null}
+            {indicationZh ? <div className="text-xs text-muted-foreground">{indicationZh}</div> : null}
+          </div>
+          {duplicate ? (
+            <span className="rounded-full bg-amber-bg px-2 py-1 text-xs font-semibold text-amber-ink">{t.duplicateShort}</span>
+          ) : null}
+        </div>
+      </Link>
+      <ClampText text={text.usage} expand={ft.expandLines} collapse={ft.collapseLines} className="text-sm text-muted-foreground" />
+      {usageZh ? <p className="text-xs text-muted-foreground">{usageZh}</p> : null}
+    </div>
+  );
+}
 
 export default function MedsPage() {
   const store = useStore();
@@ -41,24 +72,9 @@ export default function MedsPage() {
             </div>
             <div className="px-2 py-2">
               <p className="px-2 text-sm text-muted-foreground">{fill(t.drugsCount, { n: String(bag.drugs.length) })}</p>
-              {bag.drugs.map((drug) => {
-                const text = drugText(drug, store.lang);
-                return (
-                  <Link key={drug.id} href={drugPath(drug.id)} className="block rounded-2xl px-2 py-3 hover:bg-secondary">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <div className="text-lg font-semibold leading-tight break-words">{text.name}</div>
-                        {store.lang !== "zh" && drug.nameZh !== text.name ? <div className="text-sm break-words text-muted-foreground">{drug.nameZh}</div> : null}
-                        {text.indication ? <div className="text-sm break-words text-muted-foreground">{text.indication}</div> : null}
-                        <div className="text-sm break-words text-muted-foreground">{text.usage}</div>
-                      </div>
-                      {dupes.has(drug.id) ? (
-                        <span className="rounded-full bg-amber-bg px-2 py-1 text-xs font-semibold text-amber-ink">{t.duplicateShort}</span>
-                      ) : null}
-                    </div>
-                  </Link>
-                );
-              })}
+              {bag.drugs.map((drug) => (
+                <MedDrug key={drug.id} drug={drug} lang={store.lang} duplicate={dupes.has(drug.id)} />
+              ))}
             </div>
           </section>
         ))

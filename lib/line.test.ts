@@ -291,7 +291,10 @@ test("default Flex copy stays generic in every language and the photo route does
   assert.equal(LINE_DOSE.zh, "該吃藥了");
   assert.equal(LINE_DOSE.id, "Waktunya minum obat");
   assert.equal(doseAlt("vi").includes("mg"), false);
-  for (const card of previewCards("zh")) assert.equal(JSON.stringify(card).includes("脈優"), false);
+  for (const card of previewCards("zh")) {
+    assert.equal(JSON.stringify(card).includes("脈優"), false);
+    assert.equal(card.lines.includes(card.title), false);
+  }
   const plan = buildLinePlan({ ...EMPTY_DATA, bags: [bag()] }, "2026-10-24", false, "2026-11-01");
   assert.equal(JSON.stringify(plan).includes("脈優"), false);
   assert.equal(plan.refills.some((item) => item.kind === "visit"), true);

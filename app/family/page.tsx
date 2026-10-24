@@ -34,7 +34,7 @@ export default function FamilyPage() {
       />
       <div>
         {store.familyContact ? (
-          <p className="mt-1 text-sm text-muted-foreground">{t.familyContactShow}　{store.familyContact}</p>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.familyContactShow}　{store.familyContact}</p>
         ) : null}
       </div>
       <AdherenceCard lang="zh" />

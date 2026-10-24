@@ -20,6 +20,14 @@ export function hasTranslation(drug: Drug, lang: Lang): boolean {
   return lang === "zh" || Boolean(drug.i18n?.[lang]);
 }
 
+/** Chinese source line under a translation. Empty when the UI is already Chinese or the strings match. */
+export function chineseNote(lang: Lang, primary: string, chinese: string | undefined): string {
+  if (lang === "zh") return "";
+  const next = (chinese ?? "").trim();
+  if (!next || next === primary.trim()) return "";
+  return next;
+}
+
 export function spokenScript(drug: Drug, lang: Lang): string {
   const text = drugText(drug, lang);
   const parts = [text.name, text.dose, text.usage, ...text.warnings]

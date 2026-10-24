@@ -209,7 +209,7 @@
     line-height: 1.5;
     overflow-x: clip;
     max-width: 100%;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
   }
@@ -266,6 +266,12 @@
   --rose-bg: #fff1f2;
   color: #1c1915;
   background: #ffffff;
+}
+
+.ys-name {
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: manual;
 }
 
 .ys-card {

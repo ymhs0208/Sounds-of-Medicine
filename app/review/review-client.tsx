@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { ScanLine } from "lucide-react";
 import { BagFace } from "@/components/bag-artwork";
+import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BagForm } from "@/components/bag-form";
@@ -50,16 +52,23 @@ export default function ReviewClient() {
     setBag(pending.kind === "demo" ? getDemoBag(pending.key) : pending.bag);
   }, [params]);
 
-  if (!bag) {
+  if (!bag && params.get("draft")) {
     return (
       <div className="mx-auto w-full max-w-3xl space-y-3 py-10">
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-24 w-full" />
-        <p className="text-lg">{t.scanLead}</p>
-        <Button type="button" className="mt-4 h-12 rounded-2xl" onClick={() => router.push("/scan")}>
+        <p className="text-base text-muted-foreground">{t.reviewLead}</p>
+      </div>
+    );
+  }
+
+  if (!bag) {
+    return (
+      <EmptyState icon={ScanLine} title={t.reviewTitle} body={t.scanLead}>
+        <Button type="button" className="h-12 w-full rounded-2xl" onClick={() => router.push("/scan")}>
           {t.rescan}
         </Button>
-      </div>
+      </EmptyState>
     );
   }
 

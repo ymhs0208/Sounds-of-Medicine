@@ -9,12 +9,13 @@ import { timingIcon } from "@/components/dose-mark";
 import { DuplicateBanner } from "@/components/duplicate-banner";
 import { BackupBanner } from "@/components/backup-banner";
 import { EmptyState } from "@/components/empty-state";
+import { ClampText } from "@/components/clamp-text";
 import { HomeTools } from "@/components/home-tools";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/brand";
 import { duplicateGroups } from "@/lib/duplicates";
-import { drugText, fill, findDrug, formatLongDate, patientName, todayISO } from "@/lib/format";
+import { chineseNote, drugText, fill, findDrug, formatLongDate, patientName, todayISO } from "@/lib/format";
 import { ui, slotLabel } from "@/lib/i18n";
 import { features } from "@/lib/i18n/features";
 import { drugPath } from "@/lib/routes";
@@ -66,6 +67,12 @@ function RefillLine({ row, lang }: { row: RefillInfo; lang: Parameters<typeof dr
   );
 }
 
+function Note({ lang, primary, chinese }: { lang: Parameters<typeof drugText>[1]; primary: string; chinese?: string }) {
+  const note = chineseNote(lang, primary, chinese);
+  if (!note) return null;
+  return <p className="text-xs leading-snug text-muted-foreground">{note}</p>;
+}
+
 function CompactDose({
   item,
   lang,
@@ -77,23 +84,28 @@ function CompactDose({
 }) {
   const text = drugText(item.drug, lang);
   const t = ui[lang];
+  const ft = features[lang];
   return (
-    <li className="flex min-w-0 items-center gap-3 rounded-2xl bg-card px-3 py-2 ring-1 ring-border">
-      <span className="w-12 shrink-0 text-sm font-semibold">{SLOT_TIME[item.slot]}</span>
-      <Link href={drugPath(item.drug.id)} className="min-w-0 flex-1">
-        <span className="block font-semibold leading-tight break-words">{text.name}</span>
-        {text.indication ? <span className="block text-sm leading-snug text-muted-foreground">{text.indication}</span> : null}
-        {text.usage ? <span className="block text-sm leading-snug text-muted-foreground">{text.usage}</span> : null}
-        {lang !== "zh" && item.drug.nameZh && item.drug.nameZh !== text.name ? (
-          <span className="block text-xs text-muted-foreground">{item.drug.nameZh}</span>
-        ) : null}
-      </Link>
+    <li className="flex min-w-0 flex-col gap-2 rounded-2xl bg-card px-3 py-3 ring-1 ring-border sm:flex-row sm:items-center sm:gap-3">
+      <div className="flex min-w-0 flex-1 items-start gap-3">
+        <span className="w-12 shrink-0 pt-0.5 text-sm font-semibold tabular-nums">{SLOT_TIME[item.slot]}</span>
+        <div className="min-w-0 flex-1">
+          <Link href={drugPath(item.drug.id)} className="block">
+            <span className="ys-name block font-semibold leading-snug">{text.name}</span>
+          </Link>
+          <Note lang={lang} primary={text.name} chinese={item.drug.nameZh} />
+          {text.indication ? <p className="text-sm leading-snug text-muted-foreground">{text.indication}</p> : null}
+          <Note lang={lang} primary={text.indication} chinese={item.drug.indicationZh} />
+          <ClampText text={text.usage} expand={ft.expandLines} collapse={ft.collapseLines} className="text-sm text-muted-foreground" />
+          <Note lang={lang} primary={text.usage} chinese={item.drug.usageZh} />
+        </div>
+      </div>
       {item.status === "pending" ? (
-        <button type="button" className="shrink-0 rounded-full bg-pine px-3 py-2 text-sm font-semibold text-white" onClick={onGiven}>
+        <button type="button" className="h-12 w-full rounded-full bg-pine px-3 text-sm font-semibold text-white sm:h-11 sm:w-auto sm:shrink-0" onClick={onGiven}>
           {t.given}
         </button>
       ) : (
-        <span className={cn("shrink-0 text-sm font-semibold", item.status === "given" ? "text-good" : "text-rose")}>
+        <span className={cn("text-sm font-semibold sm:shrink-0", item.status === "given" ? "text-good" : "text-rose")}>
           {item.status === "given" ? t.given : t.missed}
         </span>
       )}
@@ -112,7 +124,7 @@ export default function TodayPage() {
   const name = patientName(store.bags, store.patientName);
   const unseen = store.reports.some((report) => report.replies.some((reply) => !reply.seen));
   const dupes = duplicateGroups(store.bags).length;
-  const alertCount = refills.length + dupes + (unseen ? 1 : 0);
+  const alertCount = dupes + (unseen ? 1 : 0);
   const next = items.find((item) => item.status === "pending") ?? null;
   const rest = next ? items.filter((item) => item !== next) : items;
   const [burst, setBurst] = useState(false);
@@ -156,22 +168,29 @@ export default function TodayPage() {
             </section>
           )}
 
+          {refills.length ? (
+            <section id="today-refills" className="space-y-2">
+              {refills.map((row) => (
+                <article key={row.drugId} className="rounded-3xl bg-amber-bg px-4 py-3 ring-1 ring-amber-ink/30">
+                  <RefillLine row={row} lang={store.lang} />
+                </article>
+              ))}
+              <AskLine lang={store.lang} />
+            </section>
+          ) : null}
+
           {alertCount ? (
             <details id="today-alerts" className="group rounded-3xl bg-amber-bg ring-1 ring-amber-ink/30">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 font-semibold text-amber-ink">
                 <span className="flex min-w-0 items-center gap-2">
                   <TriangleAlert className="size-5 shrink-0" aria-hidden="true" />
-                  <span className="min-w-0 break-words">{fill(ft.alertsTitle, { count: String(alertCount) })}</span>
+                  <span className="min-w-0">{fill(ft.alertsTitle, { count: String(alertCount) })}</span>
                 </span>
                 <span className="shrink-0 text-sm group-open:hidden">{ft.alertsShow}</span>
                 <span className="hidden shrink-0 text-sm group-open:inline">{ft.alertsHide}</span>
               </summary>
               <div className="space-y-3 px-4 pb-4">
                 <DuplicateBanner lang={store.lang} bare />
-                {refills.map((row) => (
-                  <RefillLine key={row.drugId} row={row} lang={store.lang} />
-                ))}
-                {refills.length ? <AskLine lang={store.lang} /> : null}
                 {unseen ? (
                   <Link href="/report" className="block text-base font-semibold text-amber-ink underline">
                     {t.newReply}
@@ -200,7 +219,7 @@ export default function TodayPage() {
           <HomeTools />
 
           {tip ? (
-            <p className="rounded-2xl bg-card px-4 py-3 text-sm leading-relaxed ring-1 ring-border">
+            <p className="rounded-2xl bg-card px-4 py-3 text-sm leading-relaxed ring-1 ring-border xl:hidden">
               {fill(ft.reminderTip, { app: APP_NAME })}{" "}
               <Link href="/settings" className="font-semibold text-pine">
                 {t.reminders}
@@ -254,7 +273,7 @@ function HeroDose({
       <p className="text-sm font-semibold text-pine">{ft.nextDose}</p>
       <p className="mt-1 text-4xl font-semibold tracking-tight">{SLOT_TIME[item.slot]}</p>
       <p className="text-base text-muted-foreground">{slotLabel[lang][item.slot]}</p>
-      <div className="mt-3 flex items-start gap-3">
+      <div className="mt-3 flex gap-3">
         {item.bag.photoDataUrl ? (
           // Local data URL from the caregiver's camera; next/image cannot optimize it.
           // eslint-disable-next-line @next/next/no-img-element
@@ -267,16 +286,16 @@ function HeroDose({
         <span className="grid size-16 shrink-0 place-items-center rounded-2xl bg-accent text-accent-foreground">
           <Icon className="size-7" aria-hidden="true" />
         </span>
-        <div className="min-w-0">
-          <h2 className="text-2xl font-semibold leading-tight break-words">
-            <Link href={drugPath(item.drug.id)}>{text.name}</Link>
-          </h2>
-          {lang !== "zh" && item.drug.nameZh && item.drug.nameZh !== text.name ? (
-            <p className="mt-1 text-sm text-muted-foreground">{item.drug.nameZh}</p>
-          ) : null}
-          {text.indication ? <p className="mt-1 text-base leading-snug">{text.indication}</p> : null}
-          {text.usage ? <p className="mt-1 text-sm leading-snug text-muted-foreground">{text.usage}</p> : null}
-        </div>
+      </div>
+      <div className="mt-3">
+        <h2 className="ys-name text-2xl font-semibold leading-snug">
+          <Link href={drugPath(item.drug.id)}>{text.name}</Link>
+        </h2>
+        <Note lang={lang} primary={text.name} chinese={item.drug.nameZh} />
+        {text.indication ? <p className="mt-1 text-base leading-snug">{text.indication}</p> : null}
+        <Note lang={lang} primary={text.indication} chinese={item.drug.indicationZh} />
+        {text.usage ? <p className="mt-1 text-sm leading-snug text-muted-foreground">{text.usage}</p> : null}
+        <Note lang={lang} primary={text.usage} chinese={item.drug.usageZh} />
       </div>
       <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-[2fr_1fr]">
         <Button type="button" className="h-16 rounded-2xl text-xl" onClick={onGiven}>

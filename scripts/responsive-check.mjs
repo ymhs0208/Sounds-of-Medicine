@@ -32,6 +32,7 @@ const routes = [
   { path: "/family/print", name: "family-print" },
   { path: "/settings", name: "settings" },
   { path: "/talk", name: "talk" },
+  { path: "/line/preview", name: "line-preview" },
   { path: "/refill", name: "refill" },
   { path: "/visit", name: "visit" },
   { path: "/visit/print", name: "visit-print" },
@@ -169,7 +170,48 @@ function seedScript() {
             warningsZh: ["勿自行停藥"],
             slots: ["morning_before"],
             frequencyZh: "每日一次",
-            i18n: {},
+            i18n: {
+              id: {
+                name: "Amlodipine 5 mg",
+                dose: "5 mg",
+                quantity: "14 tablet",
+                usage: "Satu tablet setiap pagi sebelum makan",
+                indication: "Tekanan darah tinggi",
+                warnings: ["Jangan berhenti sendiri"],
+              },
+              vi: {
+                name: "Amlodipine 5 mg",
+                dose: "5 mg",
+                quantity: "14 viên",
+                usage: "Mỗi sáng một viên trước khi ăn",
+                indication: "Huyết áp cao",
+                warnings: ["Không tự ý ngừng thuốc"],
+              },
+              fil: {
+                name: "Amlodipine 5 mg",
+                dose: "5 mg",
+                quantity: "14 tableta",
+                usage: "Isang tableta tuwing umaga bago kumain",
+                indication: "Mataas na presyon",
+                warnings: ["Huwag itigil nang mag-isa"],
+              },
+              th: {
+                name: "Amlodipine 5 mg",
+                dose: "5 มก.",
+                quantity: "14 เม็ด",
+                usage: "วันละ 1 เม็ดตอนเช้าก่อนอาหาร",
+                indication: "ความดันโลหิตสูง",
+                warnings: ["อย่าหยุดยาเอง"],
+              },
+              en: {
+                name: "Amlodipine 5 mg",
+                dose: "5 mg",
+                quantity: "14 tablets",
+                usage: "One tablet every morning before food",
+                indication: "High blood pressure",
+                warnings: ["Do not stop on your own"],
+              },
+            },
           },
         ],
       },
@@ -197,7 +239,48 @@ function seedScript() {
             warningsZh: [],
             slots: ["bedtime"],
             frequencyZh: "每日一次",
-            i18n: {},
+            i18n: {
+              id: {
+                name: "Zolpidem 5 mg",
+                dose: "5 mg",
+                quantity: "10 tablet",
+                usage: "Satu tablet sebelum tidur",
+                indication: "Sulit tidur",
+                warnings: [],
+              },
+              vi: {
+                name: "Zolpidem 5 mg",
+                dose: "5 mg",
+                quantity: "10 viên",
+                usage: "Một viên trước khi ngủ",
+                indication: "Mất ngủ",
+                warnings: [],
+              },
+              fil: {
+                name: "Zolpidem 5 mg",
+                dose: "5 mg",
+                quantity: "10 tableta",
+                usage: "Isang tableta bago matulog",
+                indication: "Hirap matulog",
+                warnings: [],
+              },
+              th: {
+                name: "Zolpidem 5 mg",
+                dose: "5 มก.",
+                quantity: "10 เม็ด",
+                usage: "1 เม็ดก่อนนอน",
+                indication: "นอนไม่หลับ",
+                warnings: [],
+              },
+              en: {
+                name: "Zolpidem 5 mg",
+                dose: "5 mg",
+                quantity: "10 tablets",
+                usage: "One tablet at bedtime",
+                indication: "Trouble sleeping",
+                warnings: [],
+              },
+            },
           },
         ],
       },
@@ -245,7 +328,10 @@ function seedScript() {
         ],
       },
     ],
-    notified: [],
+    notified: [
+      { drugId: "drug-two", date: day, slot: "morning_before" },
+      { drugId: "drug-bed", date: day, slot: "bedtime" },
+    ],
   };
   localStorage.setItem("yaosheng.v1", JSON.stringify(data));
   document.cookie = "yaosheng-ready=1; Path=/";
@@ -285,6 +371,7 @@ async function measure(page) {
 async function shoot(page, file) {
   await page.waitForSelector("h1, main p", { timeout: 15000 });
   await page.evaluate(() => document.fonts.ready);
+  await page.waitForFunction(() => !document.querySelector("[data-sonner-toast]"), { timeout: 5000 }).catch(() => undefined);
   await page.waitForTimeout(200);
   const box = await measure(page);
   await page.screenshot({ path: file, fullPage: true });

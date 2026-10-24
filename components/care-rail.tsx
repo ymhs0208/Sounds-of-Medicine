@@ -5,10 +5,9 @@ import { usePathname } from "next/navigation";
 import { Disclaimer } from "@/components/disclaimer";
 import { APP_NAME } from "@/lib/brand";
 import { duplicateGroups } from "@/lib/duplicates";
-import { fill, todayISO } from "@/lib/format";
+import { fill } from "@/lib/format";
 import { ui } from "@/lib/i18n";
 import { features } from "@/lib/i18n/features";
-import { refillStatuses } from "@/lib/refill";
 import { useStore } from "@/lib/store";
 
 export function CareRail() {
@@ -17,11 +16,9 @@ export function CareRail() {
   const lang = pathname.startsWith("/family") ? "zh" : store.lang;
   const t = ui[lang];
   const ft = features[lang];
-  const day = todayISO();
-  const refills = refillStatuses(store.bags, store.logs, day).filter((row) => row.level).length;
   const dupes = duplicateGroups(store.bags).length;
   const unseen = store.reports.some((report) => report.replies.some((reply) => !reply.seen));
-  const count = refills + dupes + (unseen ? 1 : 0);
+  const count = dupes + (unseen ? 1 : 0);
 
   return (
     <aside className="no-print hidden w-80 shrink-0 xl:block">

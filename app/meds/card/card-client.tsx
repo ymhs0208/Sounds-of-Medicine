@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { BagFace } from "@/components/bag-artwork";
 import { Bilingual } from "@/components/bilingual";
+import { ClampText } from "@/components/clamp-text";
 import { Disclaimer } from "@/components/disclaimer";
 import { DuplicateBanner } from "@/components/duplicate-banner";
 import { SlotPill } from "@/components/slot-pill";
@@ -21,6 +22,7 @@ import {
 import { duplicateDrugIds } from "@/lib/duplicates";
 import { drugText, hasTranslation, rocLabel } from "@/lib/format";
 import { ui } from "@/lib/i18n";
+import { features } from "@/lib/i18n/features";
 import { useStore } from "@/lib/store";
 
 export default function MedicineCardClient() {
@@ -58,7 +60,7 @@ export default function MedicineCardClient() {
           <p className="text-sm font-semibold" style={{ color: bag.theme }}>
             {bag.hospitalZh}
           </p>
-          <h1 className="mt-1 text-3xl font-semibold leading-tight">{text.name}</h1>
+          <h1 className="ys-name mt-1 text-2xl font-semibold leading-snug sm:text-3xl">{text.name}</h1>
           {store.lang !== "zh" && drug.nameZh && drug.nameZh !== text.name ? <p className="mt-1 text-base text-muted-foreground">{drug.nameZh}</p> : null}
           <p className="mt-2 text-sm text-muted-foreground">
             {bag.pharmacyZh} · {bag.dispensingLabel || rocLabel(bag.dispensingDate, "")}
@@ -101,7 +103,12 @@ export default function MedicineCardClient() {
             <ul className="mt-2 space-y-2">
               {text.warnings.map((warning, index) => (
                 <li key={warning} className="rounded-2xl bg-rose-bg px-3 py-2 text-base leading-snug text-rose">
-                  {warning}
+                  <ClampText
+                    text={warning}
+                    expand={features[store.lang].expandLines}
+                    collapse={features[store.lang].collapseLines}
+                    className="text-rose"
+                  />
                   {showZh && drug.warningsZh[index] ? (
                     <span className="mt-1 block text-sm text-rose">
                       {t.zhOriginal}　{drug.warningsZh[index]}

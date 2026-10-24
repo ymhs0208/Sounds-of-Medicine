@@ -109,7 +109,11 @@ function CareFrame({ children }: { children: React.ReactNode }) {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const print = pathname.startsWith("/family/print");
+  const print =
+    pathname.startsWith("/family/print") ||
+    pathname.startsWith("/visit/print") ||
+    pathname.startsWith("/emergency/print") ||
+    pathname.startsWith("/family/shared");
   const onboard = pathname === "/";
 
   if (print) {

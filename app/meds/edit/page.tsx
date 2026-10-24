@@ -45,7 +45,7 @@ function EditForm() {
         drugs: bag.drugs.map((drug) => {
           const [name, dose, usage, indication, warnings] = body.lines!.slice(cursor, cursor + 5);
           cursor += 5;
-          const current = drug.i18n[lang];
+          const current = drug.i18n?.[lang];
           return {
             ...drug,
             i18n: {

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { DAY_PARTS, scheduleFromSlots, slotsFromSchedule, type DayPart, type MealChoice } from "@/lib/bag-draft";
 import { uid } from "@/lib/id";
 import { slotLabel, ui } from "@/lib/i18n";
+import { features } from "@/lib/i18n/features";
 import type { Bag, Drug, Lang } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -51,7 +52,7 @@ function blankDrug(): DrugDraft {
 
 function fromDrug(drug: Drug, lang: Lang): DrugDraft {
   const schedule = scheduleFromSlots(drug.slots);
-  const text = lang === "zh" ? undefined : drug.i18n[lang];
+  const text = lang === "zh" ? undefined : drug.i18n?.[lang];
   return {
     id: drug.id,
     nameZh: drug.nameZh,
@@ -99,6 +100,8 @@ export function BagForm({
   const [pharmacyZh, setPharmacyZh] = useState(initial?.pharmacyZh ?? "");
   const [dispensingDate, setDispensingDate] = useState(initial?.dispensingDate ?? "");
   const [days, setDays] = useState(initial?.days ? String(initial.days) : "");
+  const [chronic, setChronic] = useState(Boolean(initial?.chronic));
+  const [chronicFill, setChronicFill] = useState<"" | "1" | "2" | "3">(initial?.chronicFill ? String(initial.chronicFill) as "1" | "2" | "3" : "");
   const [drugs, setDrugs] = useState<DrugDraft[]>(
     initial?.drugs.length ? initial.drugs.map((drug) => fromDrug(drug, lang)) : [blankDrug()],
   );
@@ -151,6 +154,8 @@ export function BagForm({
       dispensingDate: dispensingDate || null,
       dispensingLabel: dispensingDate,
       days: Number.isFinite(parsedDays) && parsedDays > 0 ? Math.round(parsedDays) : null,
+      chronic,
+      chronicFill: chronic && (chronicFill === "1" || chronicFill === "2" || chronicFill === "3") ? Number(chronicFill) as 1 | 2 | 3 : null,
       theme: initial?.theme ?? "#1b5e45",
       photoDataUrl: initial?.photoDataUrl,
       createdAt: initial?.createdAt ?? new Date().toISOString(),
@@ -217,6 +222,22 @@ export function BagForm({
           </label>
         </div>
         <p className="text-sm leading-relaxed text-muted-foreground">{t.daysOptional}</p>
+        <label className="flex min-h-11 items-center gap-3 text-base font-semibold">
+          <input type="checkbox" className="size-6" checked={chronic} onChange={(event) => setChronic(event.target.checked)} />
+          {features[lang].chronicLabel}
+        </label>
+        {chronic ? (
+          <label className="block text-sm font-semibold text-pine">
+            {features[lang].chronicFill}
+            <select className="mt-1 w-full rounded-2xl border border-border bg-background px-3 py-3 text-base" value={chronicFill} onChange={(event) => setChronicFill(event.target.value as "" | "1" | "2" | "3")}>
+              <option value="">{features[lang].chronicFillUnset}</option>
+              <option value="1">{features[lang].chronic1}</option>
+              <option value="2">{features[lang].chronic2}</option>
+              <option value="3">{features[lang].chronic3}</option>
+            </select>
+          </label>
+        ) : null}
+        <p className="text-sm leading-relaxed text-muted-foreground">{features[lang].askDoctor}</p>
       </section>
       {drugs.map((drug, index) => (
         <section key={drug.id} className="space-y-3 rounded-3xl bg-card p-4 ring-1 ring-border">

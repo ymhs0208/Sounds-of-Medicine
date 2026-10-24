@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { LanguagePicker } from "@/components/language-picker";
@@ -16,6 +17,7 @@ import {
 import { cabinetMode } from "@/lib/doses";
 import { fill, formatDateTime } from "@/lib/format";
 import { ui } from "@/lib/i18n";
+import { features } from "@/lib/i18n/features";
 import { notificationSupport, requestNotifications } from "@/lib/notify";
 import { staticDemo } from "@/lib/routes";
 import { useStore } from "@/lib/store";
@@ -40,6 +42,25 @@ export default function SettingsPage() {
   return (
     <div className="mx-auto w-full max-w-3xl space-y-4 pb-8">
       <h1 className="text-3xl font-semibold">{t.settingsTitle}</h1>
+      <section className="rounded-3xl bg-card p-4 ring-1 ring-border">
+        <h2 className="text-base font-semibold">{features[store.lang].displayTitle}</h2>
+        <label className="mt-3 flex min-h-11 items-center gap-3 text-base">
+          <input type="checkbox" className="size-6" checked={store.largeText} onChange={(event) => store.setDisplay({ largeText: event.target.checked })} />
+          {features[store.lang].displayLarge}
+        </label>
+        <label className="mt-2 flex min-h-11 items-center gap-3 text-base">
+          <input type="checkbox" className="size-6" checked={store.pictograms} onChange={(event) => store.setDisplay({ pictograms: event.target.checked })} />
+          {features[store.lang].displayIcons}
+        </label>
+      </section>
+      <section className="rounded-3xl bg-card p-4 ring-1 ring-border">
+        <h2 className="text-base font-semibold">{features[store.lang].allergiesField}</h2>
+        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{features[store.lang].allergiesHint}</p>
+        <p className="mt-2 break-words text-base">{store.allergies || store.allergiesZh || "—"}</p>
+        <Link href="/emergency" className="mt-3 inline-flex min-h-11 items-center text-base font-semibold text-pine underline">
+          {features[store.lang].emergencyTitle}
+        </Link>
+      </section>
       <section className="rounded-3xl bg-card p-4 ring-1 ring-border">
         <h2 className="text-sm font-semibold text-pine">{t.language}</h2>
         <div className="mt-3">

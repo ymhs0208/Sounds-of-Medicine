@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdherenceCard } from "@/components/adherence-card";
+import { SymptomLog } from "@/components/symptom-log";
+import { features } from "@/lib/i18n/features";
 import { Button } from "@/components/ui/button";
 import { reportSentence, observationLabel, replyLabel } from "@/lib/copy";
 import { drugText, formatDateTime } from "@/lib/format";
@@ -61,6 +63,20 @@ export default function ReportPage() {
         <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.reportLead}</p>
       </div>
       <AdherenceCard lang={lang} />
+      <SymptomLog />
+      {store.symptoms.length ? (
+        <section className="space-y-2">
+          <h2 className="text-lg font-semibold">{features[lang].visitSymptoms}</h2>
+          {[...store.symptoms].reverse().map((item) => (
+            <article key={item.id} className="rounded-2xl bg-card px-4 py-3 ring-1 ring-border">
+              <p className="font-semibold">{features[lang][item.kind === "vomit" ? "kindVomit" : item.kind === "dizzy" ? "kindDizzy" : item.kind === "fall" ? "kindFall" : item.kind === "appetite" ? "kindAppetite" : item.kind === "bp" ? "kindBp" : "kindSugar"]}</p>
+              {item.value ? <p className="text-base">{item.value}</p> : null}
+              {item.note ? <p className="text-base leading-relaxed">{item.note}</p> : null}
+              {item.noteZh && item.noteZh !== item.note ? <p className="text-sm text-muted-foreground">{item.noteZh}</p> : null}
+            </article>
+          ))}
+        </section>
+      ) : null}
       <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-8">
       <div className="min-w-0">
       {drugs.length === 0 ? (

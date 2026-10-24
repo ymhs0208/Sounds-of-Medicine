@@ -24,4 +24,13 @@
   "observability": {
     "enabled": true
   }
+  // Optional family sync. Leave this commented out so deploy does not require a KV namespace.
+  // The app already shares an encrypted link with the key in the URL fragment.
+  // To turn on short links: create a KV namespace, uncomment both blocks, and redeploy.
+  // "vars": {
+  //   "YAOSHENG_SYNC_ENABLED": "1"
+  // },
+  // "kv_namespaces": [
+  //   { "binding": "YAOSHENG_SYNC", "id": "replace-with-namespace-id" }
+  // ]
 }

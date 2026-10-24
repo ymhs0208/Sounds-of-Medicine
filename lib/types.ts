@@ -47,6 +47,10 @@ export type Bag = {
   photoDataUrl?: string;
   /** Days supplied, counted from `dispensingDate`. Empty means every day. */
   days?: number | null;
+  /** Printed 連續處方箋. Dates are calculated from the bag, not a refill instruction. */
+  chronic?: boolean;
+  /** Which pickup this bag is: 1, 2, or 3. */
+  chronicFill?: 1 | 2 | 3 | null;
   drugs: Drug[];
   createdAt: string;
 };
@@ -96,6 +100,41 @@ export type Report = {
   replies: FamilyReply[];
 };
 
+export const SYMPTOM_KINDS = ["vomit", "dizzy", "fall", "appetite", "bp", "sugar"] as const;
+export type SymptomKind = (typeof SYMPTOM_KINDS)[number];
+
+export type SymptomLog = {
+  id: string;
+  at: string;
+  date: string;
+  kind: SymptomKind;
+  /** What the caregiver typed, in their language. Empty for an icon-only log. */
+  note: string;
+  /** Traditional Chinese rendering of `note`, or empty when it is not translated yet. */
+  noteZh: string;
+  /** Blood pressure or blood sugar digits, stored exactly as typed. */
+  value?: string;
+};
+
+export type TalkDirection = "to-zh" | "from-zh";
+
+export type TalkCard = {
+  id: string;
+  at: string;
+  direction: TalkDirection;
+  sourceLang: Lang;
+  text: string;
+  textZh: string;
+  textCare: string;
+  presetId?: string;
+};
+
+export type RefillNotice = {
+  drugId: string;
+  level: 7 | 3;
+  runOut: string;
+};
+
 export type AppData = {
   version: 1;
   onboarded: boolean;
@@ -103,8 +142,15 @@ export type AppData = {
   consentAt: string | null;
   patientName: string;
   familyContact: string;
+  allergies: string;
+  allergiesZh: string;
+  largeText: boolean;
+  pictograms: boolean;
   bags: Bag[];
   logs: DoseLog[];
   reports: Report[];
   notified: DoseNotice[];
+  symptoms: SymptomLog[];
+  talks: TalkCard[];
+  refillNotified: RefillNotice[];
 };

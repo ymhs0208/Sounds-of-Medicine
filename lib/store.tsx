@@ -21,8 +21,12 @@ import type {
   DoseStatus,
   Lang,
   Observation,
+  RefillNotice,
   ReplyTemplate,
   Report,
+  SymptomKind,
+  SymptomLog,
+  TalkCard,
 } from "./types";
 import type { Slot } from "./slots";
 
@@ -44,6 +48,11 @@ type Store = AppData & {
   markRepliesSeen: () => void;
   importBackup: (raw: string) => "ok" | "invalid";
   clearAll: () => void;
+  setDisplay: (input: { largeText?: boolean; pictograms?: boolean }) => void;
+  setAllergies: (allergies: string, allergiesZh: string) => void;
+  addSymptom: (input: { kind: SymptomKind; note: string; noteZh: string; value?: string }) => void;
+  addTalk: (card: Omit<TalkCard, "id" | "at">) => TalkCard;
+  markRefillNotified: (notices: RefillNotice[]) => void;
 };
 
 const Ctx = createContext<Store | null>(null);
@@ -242,6 +251,46 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
+  const setDisplay = useCallback((input: { largeText?: boolean; pictograms?: boolean }) => {
+    setData((current) => ({
+      ...current,
+      largeText: input.largeText ?? current.largeText,
+      pictograms: input.pictograms ?? current.pictograms,
+    }));
+  }, []);
+
+  const setAllergies = useCallback((allergies: string, allergiesZh: string) => {
+    setData((current) => ({ ...current, allergies: allergies.trim(), allergiesZh: allergiesZh.trim() }));
+  }, []);
+
+  const addSymptom = useCallback((input: { kind: SymptomKind; note: string; noteZh: string; value?: string }) => {
+    const symptom: SymptomLog = {
+      id: uid(),
+      at: new Date().toISOString(),
+      date: todayISO(),
+      kind: input.kind,
+      note: input.note.trim(),
+      noteZh: input.noteZh.trim(),
+      value: input.value?.trim() || undefined,
+    };
+    setData((current) => ({ ...current, symptoms: [...current.symptoms, symptom] }));
+  }, []);
+
+  const addTalk = useCallback((card: Omit<TalkCard, "id" | "at">) => {
+    const saved: TalkCard = { ...card, id: uid(), at: new Date().toISOString() };
+    setData((current) => ({ ...current, talks: [...current.talks, saved] }));
+    return saved;
+  }, []);
+
+  const markRefillNotified = useCallback((notices: RefillNotice[]) => {
+    setData((current) => {
+      const have = new Set(current.refillNotified.map((notice) => `${notice.drugId}|${notice.level}|${notice.runOut}`));
+      const more = notices.filter((notice) => !have.has(`${notice.drugId}|${notice.level}|${notice.runOut}`));
+      if (!more.length) return current;
+      return { ...current, refillNotified: [...current.refillNotified, ...more] };
+    });
+  }, []);
+
   const importBackup = useCallback((raw: string): "ok" | "invalid" => {
     const parsed = parseBackup(raw);
     if (!parsed) return "invalid";
@@ -272,6 +321,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       markRepliesSeen,
       importBackup,
       clearAll,
+      setDisplay,
+      setAllergies,
+      addSymptom,
+      addTalk,
+      markRefillNotified,
     }),
     [
       data,
@@ -290,6 +344,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       markRepliesSeen,
       importBackup,
       clearAll,
+      setDisplay,
+      setAllergies,
+      addSymptom,
+      addTalk,
+      markRefillNotified,
     ],
   );
 

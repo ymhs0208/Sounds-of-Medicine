@@ -2,7 +2,7 @@ import type { Bag, Drug, DrugText, Lang } from "./types";
 
 export function drugText(drug: Drug, lang: Lang): DrugText {
   if (lang !== "zh") {
-    const translated = drug.i18n[lang];
+    const translated = drug.i18n?.[lang];
     if (translated) return translated;
   }
   return {
@@ -16,7 +16,7 @@ export function drugText(drug: Drug, lang: Lang): DrugText {
 }
 
 export function hasTranslation(drug: Drug, lang: Lang): boolean {
-  return lang === "zh" || Boolean(drug.i18n[lang]);
+  return lang === "zh" || Boolean(drug.i18n?.[lang]);
 }
 
 export function spokenScript(drug: Drug, lang: Lang): string {

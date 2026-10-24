@@ -3,6 +3,7 @@ import test from "node:test";
 import { EMPTY_DATA } from "./backup";
 import { slotsFromSchedule } from "./bag-draft";
 import { adherence, admitBag, applyDose, buildTimeline, dueItems } from "./doses";
+import { drugText } from "./format";
 import type { Bag, Drug } from "./types";
 
 function drug(partial: Partial<Drug> & Pick<Drug, "id" | "nameZh" | "slots">): Drug {
@@ -135,4 +136,12 @@ test("the same ingredient on two real bags is flagged", async () => {
   const ids = duplicateDrugIds(bags);
   assert.equal(ids.has("a"), true);
   assert.equal(ids.has("b"), true);
+});
+
+test("Indonesian still reads a drug that has no translation object", () => {
+  const bare = drug({ id: "bare", nameZh: "脈優", slots: ["morning_after"] });
+  delete (bare as { i18n?: Drug["i18n"] }).i18n;
+  const items = buildTimeline([bag({ id: "h", drugs: [bare] })], [], "2026-10-24");
+  assert.equal(items.length, 1);
+  assert.equal(drugText(bare, "id").name, "脈優");
 });

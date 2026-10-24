@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { toast } from "sonner";
 import { AdherenceCard } from "@/components/adherence-card";
+import { FamilyShare } from "@/components/family-share";
+import { features } from "@/lib/i18n/features";
 import { DuplicateBanner } from "@/components/duplicate-banner";
 import { Disclaimer } from "@/components/disclaimer";
 import { Button } from "@/components/ui/button";
@@ -33,6 +35,26 @@ export default function FamilyPage() {
         ) : null}
       </div>
       <AdherenceCard lang="zh" />
+      <FamilyShare lang="zh" />
+      <section>
+        <h2 className="mb-2 text-lg font-semibold">{features.zh.visitSymptoms}</h2>
+        {store.symptoms.length === 0 ? (
+          <p className="text-sm text-muted-foreground">{features.zh.visitNone}</p>
+        ) : (
+          <div className="space-y-2">
+            {[...store.symptoms].reverse().map((item) => (
+              <article key={item.id} className="rounded-2xl bg-card px-4 py-3 ring-1 ring-border">
+                <p className="text-xs text-muted-foreground">{item.date}</p>
+                <p className="font-semibold">
+                  {features.zh[item.kind === "vomit" ? "kindVomit" : item.kind === "dizzy" ? "kindDizzy" : item.kind === "fall" ? "kindFall" : item.kind === "appetite" ? "kindAppetite" : item.kind === "bp" ? "kindBp" : "kindSugar"]}
+                  {item.value ? `　${item.value}` : ""}
+                </p>
+                <p className="leading-relaxed">{item.noteZh || item.note}</p>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
       <Button nativeButton={false} className="h-12 w-full rounded-2xl text-base sm:w-fit sm:min-w-48" render={<Link href="/family/print" />}>
         {t.print}
       </Button>

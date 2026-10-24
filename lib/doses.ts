@@ -17,7 +17,7 @@ export function buildTimeline(bags: Bag[], logs: DoseLog[], date: string): Timel
   const items: TimelineItem[] = [];
   for (const bag of active) {
     for (const drug of bag.drugs) {
-      for (const slot of drug.slots) {
+      for (const slot of drug.slots ?? []) {
         const log = logs.find(
           (entry) => entry.drugId === drug.id && entry.date === date && entry.slot === slot,
         );

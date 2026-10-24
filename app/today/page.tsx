@@ -3,13 +3,18 @@
 import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { AskLine } from "@/components/ask-line";
+import { DoseMark } from "@/components/dose-mark";
 import { DuplicateBanner } from "@/components/duplicate-banner";
+import { HomeTools } from "@/components/home-tools";
 import { Disclaimer } from "@/components/disclaimer";
 import { drugText, fill, formatLongDate, patientName, todayISO } from "@/lib/format";
 import { ui, slotLabel } from "@/lib/i18n";
 import { notificationSupport, requestNotifications, showNotification } from "@/lib/notify";
 import { SLOT_TIME } from "@/lib/slots";
 import { drugPath } from "@/lib/routes";
+import { features } from "@/lib/i18n/features";
+import { refillStatuses } from "@/lib/refill";
 import { buildTimeline, groupTimeline } from "@/lib/schedule";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -17,7 +22,9 @@ import { cn } from "@/lib/utils";
 export default function TodayPage() {
   const store = useStore();
   const t = ui[store.lang];
+  const ft = features[store.lang];
   const day = todayISO();
+  const refills = refillStatuses(store.bags, store.logs, day).filter((row) => row.level);
   const items = buildTimeline(store.bags, store.logs, day);
   const groups = groupTimeline(items);
   const done = items.filter((item) => item.status !== "pending").length;
@@ -59,6 +66,19 @@ export default function TodayPage() {
         </p>
       </div>
 
+      <HomeTools />
+      <DuplicateBanner lang={store.lang} prominent />
+      {refills.length ? (
+        <section className="space-y-2 rounded-3xl bg-card p-4 ring-1 ring-border">
+          {refills.map((row) => (
+            <p key={row.drugId} className="text-base leading-snug font-semibold">
+              {row.nameZh}　{fill(ft.refillRemind, { days: String(row.daysLeft) })}
+            </p>
+          ))}
+          <AskLine lang={store.lang} />
+        </section>
+      ) : null}
+
       {unseen ? (
         <Link href="/report" className="block rounded-2xl bg-accent px-4 py-3 text-base font-semibold text-accent-foreground">
           {t.newReply}
@@ -79,7 +99,6 @@ export default function TodayPage() {
               />
             </div>
             <p className="mt-2 text-sm text-muted-foreground">{t.todayLead}</p>
-          <DuplicateBanner lang={store.lang} />
           {groups.map((group) => {
             const [hour, mins] = SLOT_TIME[group.slot].split(":").map(Number);
             const passed = minute >= hour * 60 + mins;
@@ -124,6 +143,7 @@ export default function TodayPage() {
                             ) : null}
                           </div>
                         </Link>
+                        <DoseMark bag={item.bag} slot={item.slot} lang={store.lang} on={store.pictograms} />
                         {item.status === "pending" ? (
                           <div className="mt-3 grid grid-cols-2 gap-2">
                             <Button

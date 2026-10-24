@@ -13,8 +13,9 @@ export type TranslateResult =
   | { ok: true; lines: string[] }
   | { ok: false; error: "no_key" | "upstream" };
 
-export async function translateLines(lines: string[], lang: Lang): Promise<TranslateResult> {
-  if (lang === "zh") return { ok: true, lines };
+export async function translateLines(lines: string[], lang: Lang, from?: Lang): Promise<TranslateResult> {
+  const source = from ?? "zh";
+  if (source === lang) return { ok: true, lines };
   const key = process.env.OPENAI_API_KEY;
   if (!key) return { ok: false, error: "no_key" };
   const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
@@ -37,11 +38,15 @@ export async function translateLines(lines: string[], lang: Lang): Promise<Trans
           {
             role: "system",
             content:
-              "Translate each Taiwan medicine-bag line into the requested language. Keep the same array length and order. Do not add medical advice, dosing changes, or facts that are not in the source line. Empty strings stay empty. Return JSON {\"lines\": string[]}.",
+              "Translate each line into the requested language. Keep the same array length and order. Do not answer questions, add medical advice, change doses, or add facts that are not in the source line. A question stays a question. Empty strings stay empty. Return JSON {\"lines\": string[]}.",
           },
           {
             role: "user",
-            content: JSON.stringify({ language: LANG_NAME[lang], lines }),
+            content: JSON.stringify({
+              sourceLanguage: LANG_NAME[source],
+              language: LANG_NAME[lang],
+              lines,
+            }),
           },
         ],
       }),

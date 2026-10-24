@@ -27,7 +27,7 @@ type DrugDraft = {
   trWarnings: string;
 };
 
-const inputClass = "mt-1 w-full rounded-2xl border border-border bg-background px-3 py-3 text-base";
+const inputClass = "mt-1 w-full min-h-11 max-w-full rounded-2xl border border-border bg-background px-3 py-3 text-base";
 
 function blankDrug(): DrugDraft {
   return {
@@ -206,7 +206,7 @@ export function BagForm({
           {t.fieldPharmacy}
           <input className={inputClass} value={pharmacyZh} onChange={(event) => setPharmacyZh(event.target.value)} />
         </label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <label className="block text-sm font-semibold text-pine">
             {t.fieldDate}
             <input className={inputClass} type="date" value={dispensingDate} onChange={(event) => setDispensingDate(event.target.value)} />
@@ -255,7 +255,7 @@ export function BagForm({
                   <button
                     key={part}
                     type="button"
-                    className={cn("h-12 rounded-2xl border text-base font-semibold", on ? "border-pine bg-accent" : "border-border")}
+                    className={cn("h-auto min-h-12 rounded-2xl border px-2 py-2 text-base leading-snug font-semibold whitespace-normal", on ? "border-pine bg-accent" : "border-border")}
                     onClick={() => toggleTime(index, part)}
                   >
                     {label}
@@ -266,7 +266,7 @@ export function BagForm({
           </div>
           <div>
             <p className="text-sm font-semibold text-pine">{t.fieldMealTiming}</p>
-            <div className="mt-2 grid grid-cols-3 gap-2">
+            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
               {(
                 [
                   ["before", t.beforeMeal],
@@ -278,7 +278,7 @@ export function BagForm({
                   key={value}
                   type="button"
                   className={cn(
-                    "h-12 rounded-2xl border px-1 text-sm font-semibold",
+                    "h-auto min-h-12 rounded-2xl border px-2 py-2 text-sm leading-snug font-semibold whitespace-normal",
                     drug.meal === value ? "border-pine bg-accent" : "border-border",
                   )}
                   onClick={() => patch(index, { meal: value })}

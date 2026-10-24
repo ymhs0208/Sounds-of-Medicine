@@ -82,7 +82,7 @@ export default function ScanPage() {
   }
 
   return (
-    <div className="space-y-4 pb-6">
+    <div className="mx-auto w-full max-w-3xl space-y-4 pb-6">
       <div>
         <p className="text-sm font-semibold text-pine">{staticDemo ? t.demoMode : llm ? t.llmMode : t.manualEntry}</p>
         <h1 className="text-3xl font-semibold">{t.scanTitle}</h1>
@@ -94,11 +94,11 @@ export default function ScanPage() {
         </p>
       ) : null}
       <div className="grid grid-cols-2 gap-2">
-        <Button type="button" className="h-14 rounded-2xl text-base" onClick={() => cameraRef.current?.click()}>
+        <Button type="button" className="h-auto min-h-14 w-full min-w-0 rounded-2xl px-2 py-3 text-base whitespace-normal" onClick={() => cameraRef.current?.click()}>
           <Camera className="size-5" />
           {t.photograph}
         </Button>
-        <Button type="button" variant="outline" className="h-14 rounded-2xl text-base" onClick={() => fileRef.current?.click()}>
+        <Button type="button" variant="outline" className="h-auto min-h-14 w-full min-w-0 rounded-2xl px-2 py-3 text-base whitespace-normal" onClick={() => fileRef.current?.click()}>
           <ImagePlus className="size-5" />
           {t.upload}
         </Button>
@@ -160,7 +160,7 @@ export default function ScanPage() {
         </>
       ) : null}
       {busy ? (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-[#1c1915]/45 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1c1915]/55 p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">
           <div className="w-full max-w-sm rounded-3xl bg-card p-5 text-center">
             <div className="relative mx-auto h-36 overflow-hidden rounded-2xl bg-[#14261f]">
               <div className="scanline absolute right-6 left-6 h-0.5 bg-[#b7f0cf]" />

@@ -16,8 +16,8 @@ export function Bilingual({
       <h3 className="text-sm font-semibold text-pine">{label}</h3>
       <p className="mt-1 text-lg font-semibold leading-snug">{primary || "—"}</p>
       {showOriginal && original && original !== primary ? (
-        <p className="mt-1 text-base leading-snug text-[#3f382f]">
-          <span className="mr-2 text-xs font-semibold text-[#6b6256]">{originalLabel}</span>
+        <p className="mt-1 text-base leading-snug text-foreground">
+          <span className="mr-2 text-xs font-semibold text-muted-foreground">{originalLabel}</span>
           {original}
         </p>
       ) : null}

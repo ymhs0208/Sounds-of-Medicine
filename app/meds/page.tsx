@@ -16,7 +16,7 @@ export default function MedsPage() {
   const name = patientName(store.bags, store.patientName);
 
   return (
-    <div className="space-y-4 pb-6">
+    <div className="mx-auto w-full max-w-3xl space-y-4 pb-6">
       <div>
         <h1 className="text-3xl font-semibold">{t.medsTitle}</h1>
         <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.medsLead}</p>
@@ -33,7 +33,7 @@ export default function MedsPage() {
           <section key={bag.id} className="overflow-hidden rounded-3xl bg-card ring-1 ring-foreground/10">
             <div className="px-4 py-3 text-white" style={{ background: bag.theme }}>
               <div className="flex items-center justify-between gap-2">
-                <div className="text-lg font-semibold">{bag.hospitalZh}</div>
+                <div className="min-w-0 text-lg font-semibold break-words">{bag.hospitalZh}</div>
                 {bag.source === "demo" ? <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-semibold">{t.demoBadge}</span> : null}
               </div>
               <div className="text-sm text-white/80">
@@ -47,10 +47,10 @@ export default function MedsPage() {
                 return (
                   <Link key={drug.id} href={drugPath(drug.id)} className="block rounded-2xl px-2 py-3 hover:bg-secondary">
                     <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <div className="text-lg font-semibold leading-tight">{text.name}</div>
-                        {store.lang !== "zh" ? <div className="text-sm text-[#3f382f]">{drug.nameZh}</div> : null}
-                        <div className="text-sm text-muted-foreground">{text.usage}</div>
+                      <div className="min-w-0">
+                        <div className="text-lg font-semibold leading-tight break-words">{text.name}</div>
+                        {store.lang !== "zh" ? <div className="text-sm break-words text-muted-foreground">{drug.nameZh}</div> : null}
+                        <div className="text-sm break-words text-muted-foreground">{text.usage}</div>
                       </div>
                       {dupes.has(drug.id) ? (
                         <span className="rounded-full bg-amber-bg px-2 py-1 text-xs font-semibold text-amber-ink">{t.duplicateShort}</span>

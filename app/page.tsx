@@ -35,14 +35,16 @@ export default function OnboardingPage() {
   const ready = Boolean(selected) && consent && patientName.trim().length > 0 && familyContact.trim().length > 0;
 
   return (
-    <div className="flex min-h-full flex-col">
-      <div className="bg-pine px-5 pt-10 pb-8 text-white">
-        <Logo className="size-12" />
-        <p className="mt-6 text-sm text-white/80">{t.madeFor}</p>
-        <h1 className="mt-1 text-4xl font-semibold tracking-tight">藥聲</h1>
-        <p className="mt-3 max-w-[18rem] text-lg leading-snug">{t.tagline}</p>
+    <div className="flex min-h-dvh flex-col">
+      <div className="bg-pine px-5 pt-[max(2.5rem,env(safe-area-inset-top))] pb-8 text-white lg:px-10">
+        <div className="mx-auto w-full max-w-2xl">
+          <Logo className="size-12" />
+          <p className="mt-6 text-sm text-white/80">{t.madeFor}</p>
+          <h1 className="mt-1 text-4xl font-semibold tracking-tight">藥聲</h1>
+          <p className="mt-3 text-lg leading-snug">{t.tagline}</p>
+        </div>
       </div>
-      <div className="flex flex-1 flex-col gap-5 px-4 py-5">
+      <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-5 px-4 py-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
         <section className="space-y-3">
           <label className="block text-sm font-semibold text-pine">
             {t.patientNameField}

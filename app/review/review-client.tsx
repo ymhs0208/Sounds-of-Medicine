@@ -31,7 +31,7 @@ export default function ReviewClient() {
 
   if (!bag) {
     return (
-      <div className="py-10 text-center">
+      <div className="mx-auto w-full max-w-3xl py-10 text-center">
         <p className="text-lg">{t.scanLead}</p>
         <Button type="button" className="mt-4 h-12 rounded-2xl" onClick={() => router.push("/scan")}>
           {t.rescan}
@@ -43,7 +43,7 @@ export default function ReviewClient() {
   const mismatch = namesDiffer(store.bags, bag.patientZh);
 
   return (
-    <div className="space-y-4 pb-8">
+    <div className="mx-auto w-full max-w-3xl space-y-4 pb-8">
       <div>
         <p className="text-sm font-semibold text-pine">{t.fromBag}</p>
         <h1 className="text-3xl font-semibold">{t.reviewTitle}</h1>

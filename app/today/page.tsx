@@ -66,8 +66,8 @@ export default function TodayPage() {
       ) : null}
 
       {items.length ? (
-        <>
-          <div>
+        <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-8">
+          <div className="min-w-0 space-y-4">
             <div className="mb-2 flex items-center justify-between text-sm">
               <span>{fill(t.progress, { done: String(done), total: String(items.length) })}</span>
               {done === items.length ? <span className="font-semibold text-good">{t.allClear}</span> : null}
@@ -79,18 +79,17 @@ export default function TodayPage() {
               />
             </div>
             <p className="mt-2 text-sm text-muted-foreground">{t.todayLead}</p>
-          </div>
           <DuplicateBanner lang={store.lang} />
           {groups.map((group) => {
             const [hour, mins] = SLOT_TIME[group.slot].split(":").map(Number);
             const passed = minute >= hour * 60 + mins;
             return (
               <section key={group.slot}>
-                <div className="mb-2 flex items-baseline justify-between">
-                  <h2 className="text-lg font-semibold">
+                <div className="mb-2 flex items-baseline justify-between gap-3">
+                  <h2 className="min-w-0 text-lg font-semibold break-words">
                     {SLOT_TIME[group.slot]}　{slotLabel[store.lang][group.slot]}
                   </h2>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="shrink-0 text-sm text-muted-foreground">
                     {group.items.every((item) => item.status !== "pending") ? t.markSaved : passed ? t.overdue : t.upcoming}
                   </span>
                 </div>
@@ -108,10 +107,10 @@ export default function TodayPage() {
                       >
                         <Link href={drugPath(item.drug.id)} className="block">
                           <div className="flex items-start justify-between gap-3">
-                            <div>
-                              <h3 className="text-xl font-semibold leading-tight">{text.name}</h3>
+                            <div className="min-w-0">
+                              <h3 className="text-xl font-semibold leading-tight break-words">{text.name}</h3>
                               {store.lang !== "zh" ? (
-                                <p className="mt-1 text-sm text-[#3f382f]">{item.drug.nameZh}</p>
+                                <p className="mt-1 text-sm text-muted-foreground">{item.drug.nameZh}</p>
                               ) : null}
                               <p className="mt-1 text-sm text-muted-foreground">
                                 {item.bag.hospitalShort}
@@ -129,7 +128,7 @@ export default function TodayPage() {
                           <div className="mt-3 grid grid-cols-2 gap-2">
                             <Button
                               type="button"
-                              className="h-12 rounded-2xl text-base"
+                              className="h-auto min-h-12 rounded-2xl px-2 py-2 text-base"
                               onClick={() => {
                                 store.setDose(item.drug.id, item.slot, "given", day);
                                 toast(t.markSaved);
@@ -140,7 +139,7 @@ export default function TodayPage() {
                             <Button
                               type="button"
                               variant="outline"
-                              className="h-12 rounded-2xl text-base"
+                              className="h-auto min-h-12 rounded-2xl px-2 py-2 text-base"
                               onClick={() => {
                                 store.setDose(item.drug.id, item.slot, "missed", day);
                                 toast(t.markSaved);
@@ -161,7 +160,7 @@ export default function TodayPage() {
                             </span>
                             <button
                               type="button"
-                              className="text-sm font-semibold text-pine underline-offset-2"
+                              className="inline-flex min-h-11 items-center px-2 text-base font-semibold text-pine underline-offset-2"
                               onClick={() => store.setDose(item.drug.id, item.slot, null, day)}
                             >
                               {t.undo}
@@ -175,21 +174,24 @@ export default function TodayPage() {
               </section>
             );
           })}
+          </div>
+          <div className="mt-4 min-w-0 space-y-4 lg:sticky lg:top-0 lg:mt-0">
           <section className="rounded-3xl bg-card p-4 ring-1 ring-border">
             <h2 className="text-base font-semibold">{t.reminders}</h2>
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.worksOffline}</p>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.notifLimit}</p>
             <div className="mt-3 grid gap-2">
-              <Button type="button" variant="outline" className="h-12 rounded-2xl text-base" onClick={enable}>
+              <Button type="button" variant="outline" className="h-auto min-h-12 rounded-2xl px-2 py-2 text-base" onClick={enable}>
                 {notificationSupport() === "granted" ? t.remindersOn : t.enableReminders}
               </Button>
-              <Button type="button" variant="secondary" className="h-12 rounded-2xl text-base" onClick={testNotify}>
+              <Button type="button" variant="secondary" className="h-auto min-h-12 rounded-2xl px-2 py-2 text-base" onClick={testNotify}>
                 {t.testReminder}
               </Button>
             </div>
           </section>
           <Disclaimer lang={store.lang} />
-        </>
+          </div>
+        </div>
       ) : (
         <section className="rounded-3xl bg-card p-5 ring-1 ring-border">
           <h2 className="text-2xl font-semibold">{t.emptyTitle}</h2>

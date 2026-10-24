@@ -51,7 +51,7 @@ export default function MedicineCardClient() {
   const duplicate = duplicateDrugIds(store.bags).has(drug.id);
 
   return (
-    <div className="space-y-4 pb-8">
+    <div className="mx-auto w-full max-w-3xl space-y-4 pb-8">
       <div className="overflow-hidden rounded-3xl bg-card ring-1 ring-foreground/10">
         <div className="h-2" style={{ background: bag.theme }} />
         <div className="px-4 py-4">
@@ -59,7 +59,7 @@ export default function MedicineCardClient() {
             {bag.hospitalZh}
           </p>
           <h1 className="mt-1 text-3xl font-semibold leading-tight">{text.name}</h1>
-          {showZh ? <p className="mt-1 text-base text-[#3f382f]">{drug.nameZh}</p> : null}
+          {showZh ? <p className="mt-1 text-base text-muted-foreground">{drug.nameZh}</p> : null}
           <p className="mt-2 text-sm text-muted-foreground">
             {bag.pharmacyZh} · {bag.dispensingLabel || rocLabel(bag.dispensingDate, "")}
           </p>
@@ -103,7 +103,7 @@ export default function MedicineCardClient() {
                 <li key={warning} className="rounded-2xl bg-rose-bg px-3 py-2 text-base leading-snug text-rose">
                   {warning}
                   {showZh && drug.warningsZh[index] ? (
-                    <span className="mt-1 block text-sm text-[#6b2436]">
+                    <span className="mt-1 block text-sm text-rose">
                       {t.zhOriginal}　{drug.warningsZh[index]}
                     </span>
                   ) : null}
@@ -115,7 +115,7 @@ export default function MedicineCardClient() {
           )}
         </section>
       </article>
-      <button type="button" className="text-sm font-semibold text-pine" onClick={() => setShowBag((value) => !value)}>
+      <button type="button" className="inline-flex min-h-11 items-center text-base font-semibold text-pine" onClick={() => setShowBag((value) => !value)}>
         {showBag ? t.hideBag : t.viewBag}
       </button>
       {showBag ? (

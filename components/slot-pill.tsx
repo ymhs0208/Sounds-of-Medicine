@@ -15,7 +15,7 @@ export function SlotPill({ slot, lang }: { slot: Slot; lang: Lang }) {
       <Icon className="size-6 shrink-0" aria-hidden="true" />
       <div>
         <div className="text-base font-semibold leading-tight">{slotLabel[lang][slot]}</div>
-        <div className="text-sm text-[#3d5c4c]">
+        <div className="text-sm text-accent-foreground">
           {SLOT_TIME[slot]}
           {meal ? ` · ${meal}` : ""}
         </div>

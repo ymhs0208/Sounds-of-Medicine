@@ -14,12 +14,12 @@ export function DuplicateBanner({ lang }: { lang: Lang }) {
   if (!groups.length) return null;
   const t = ui[lang];
   return (
-    <section className="rounded-2xl bg-amber-bg px-4 py-3 ring-1 ring-[#efd3a0]">
-      <div className="flex items-center gap-2 text-base font-semibold text-amber-ink">
-        <TriangleAlert className="size-5 shrink-0" aria-hidden="true" />
-        {t.askTitle}
+    <section className="rounded-2xl bg-amber-bg px-4 py-3 ring-1 ring-amber-ink/30">
+      <div className="flex items-start gap-2 text-base font-semibold text-amber-ink">
+        <TriangleAlert className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+        <span className="min-w-0">{t.askTitle}</span>
       </div>
-      <div className="mt-2 space-y-1 text-sm leading-relaxed text-[#3f2e10]">
+      <div className="mt-2 space-y-1 text-sm leading-relaxed text-amber-ink">
         {groups.map((group) => (
           <p key={group.key}>
             {duplicateLine(
@@ -33,7 +33,7 @@ export function DuplicateBanner({ lang }: { lang: Lang }) {
           </p>
         ))}
       </div>
-      <p className="mt-2 text-sm leading-relaxed text-[#3f2e10]">{t.askBody}</p>
+      <p className="mt-2 text-sm leading-relaxed text-amber-ink">{t.askBody}</p>
     </section>
   );
 }

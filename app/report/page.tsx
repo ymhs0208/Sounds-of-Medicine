@@ -61,6 +61,8 @@ export default function ReportPage() {
         <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.reportLead}</p>
       </div>
       <AdherenceCard lang={lang} />
+      <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-8">
+      <div className="min-w-0">
       {drugs.length === 0 ? (
         <p className="rounded-3xl bg-card px-4 py-6 ring-1 ring-border">{t.noMeds}</p>
       ) : (
@@ -73,11 +75,11 @@ export default function ReportPage() {
                 type="button"
                 onClick={() => setDrugId(item.drug.id)}
                 className={cn(
-                  "rounded-2xl border px-3 py-3 text-left",
+                  "min-h-11 w-full min-w-0 rounded-2xl border px-3 py-3 text-left",
                   drugId === item.drug.id ? "border-pine bg-accent" : "border-border",
                 )}
               >
-                <div className="font-semibold">{drugText(item.drug, lang).name}</div>
+                <div className="font-semibold break-words">{drugText(item.drug, lang).name}</div>
                 <div className="text-sm text-muted-foreground">{item.bag.hospitalShort}</div>
               </button>
             ))}
@@ -111,7 +113,7 @@ export default function ReportPage() {
                 type="button"
                 onClick={() => setObservation(key)}
                 className={cn(
-                  "min-h-12 rounded-2xl border px-2 text-sm font-semibold",
+                  "h-auto min-h-12 rounded-2xl border px-2 py-2 text-sm leading-snug font-semibold whitespace-normal",
                   observation === key ? "border-pine bg-accent" : "border-border",
                 )}
               >
@@ -143,7 +145,8 @@ export default function ReportPage() {
           </Button>
         </section>
       )}
-      <section>
+      </div>
+      <section className="mt-4 min-w-0 lg:mt-0">
         <h2 className="mb-2 text-lg font-semibold">{t.youSaid}</h2>
         {history.length === 0 ? (
           <p className="text-sm leading-relaxed text-muted-foreground">{t.emptyReportHint}</p>
@@ -155,7 +158,7 @@ export default function ReportPage() {
                   {formatDateTime(report.at, lang)} · {report.source === "timeline" ? t.sourceTimeline : t.sourceForm}
                 </p>
                 <p className="mt-1 text-base font-semibold leading-relaxed">{reportSentence(report, lang, bags)}</p>
-                <p className="mt-2 text-sm leading-relaxed text-[#3f382f]">{reportSentence(report, "zh", bags)}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{reportSentence(report, "zh", bags)}</p>
                 {report.replies.length ? (
                   <div className="mt-3 space-y-2">
                     {report.replies.map((reply) => (
@@ -173,6 +176,7 @@ export default function ReportPage() {
           </div>
         )}
       </section>
+      </div>
     </div>
   );
 }

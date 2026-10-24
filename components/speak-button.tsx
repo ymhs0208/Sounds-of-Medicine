@@ -38,7 +38,7 @@ export function SpeakButton({ drug, lang }: { drug: Drug; lang: Lang }) {
         >
           {active === "care" ? <Square className="size-6" /> : <Volume2 className="size-8" />}
         </button>
-        <div>
+        <div className="min-w-0">
           <div className="text-xl font-semibold">{active === "care" ? t.cardStop : t.cardPlay}</div>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.spokenHint}</p>
         </div>

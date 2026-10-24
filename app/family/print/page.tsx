@@ -10,26 +10,26 @@ import { useStore } from "@/lib/store";
 export default function PrintPage() {
   const store = useStore();
   const t = ui.zh;
-  const name = patientName(store.bags) || t.unknownPatient;
+  const name = patientName(store.bags, store.patientName) || t.unknownPatient;
   const history = [...store.reports].reverse();
 
   return (
-    <div className="print-sheet mx-auto max-w-3xl px-5 py-8 text-[#1c1915]">
-      <div className="no-print mb-6 flex gap-2">
-        <Link href="/family" className="rounded-full border px-4 py-2 text-sm font-semibold">
+    <div className="print-sheet mx-auto w-full max-w-[210mm] px-5 pt-[max(2rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))]">
+      <div className="no-print mb-6 flex flex-wrap gap-2">
+        <Link href="/family" className="inline-flex min-h-11 items-center rounded-full border border-[#e0d6c4] px-4 text-base font-semibold">
           {t.backApp}
         </Link>
-        <button type="button" className="rounded-full bg-[#1b5e45] px-4 py-2 text-sm font-semibold text-white" onClick={() => window.print()}>
+        <button type="button" className="inline-flex min-h-11 items-center rounded-full bg-[#1b5e45] px-4 text-base font-semibold text-white" onClick={() => window.print()}>
           {t.printButton}
         </button>
       </div>
       <p className="text-sm font-semibold text-[#1b5e45]">藥聲</p>
       <h1 className="mt-1 text-3xl font-semibold">{t.printTitle}</h1>
       <p className="mt-3 text-base leading-relaxed">{t.printNote}</p>
-      <dl className="mt-4 grid grid-cols-2 gap-2 text-base">
+      <dl className="mt-4 grid grid-cols-1 gap-3 text-base sm:grid-cols-2">
         <div>
           <dt className="text-sm text-[#5c5346]">{t.printPatient}</dt>
-          <dd className="font-semibold">{name}</dd>
+          <dd className="font-semibold break-words">{name}</dd>
         </div>
         <div>
           <dt className="text-sm text-[#5c5346]">{t.printGenerated}</dt>

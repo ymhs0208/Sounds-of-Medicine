@@ -86,7 +86,7 @@ function EditForm() {
   }
 
   return (
-    <div className="space-y-4 pb-8">
+    <div className="mx-auto w-full max-w-3xl space-y-4 pb-8">
       <h1 className="text-3xl font-semibold">{existing ? t.editBag : t.manualEntry}</h1>
       <p className="text-base leading-relaxed text-muted-foreground">{t.confirmHint}</p>
       <BagForm

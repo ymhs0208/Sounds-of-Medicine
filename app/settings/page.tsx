@@ -38,7 +38,7 @@ export default function SettingsPage() {
   }, []);
 
   return (
-    <div className="space-y-4 pb-8">
+    <div className="mx-auto w-full max-w-3xl space-y-4 pb-8">
       <h1 className="text-3xl font-semibold">{t.settingsTitle}</h1>
       <section className="rounded-3xl bg-card p-4 ring-1 ring-border">
         <h2 className="text-sm font-semibold text-pine">{t.language}</h2>
@@ -73,7 +73,7 @@ export default function SettingsPage() {
           {notificationSupport() === "granted" ? t.remindersOn : t.enableReminders}
         </Button>
       </section>
-      <section className="rounded-3xl bg-amber-bg p-4 ring-1 ring-[#efd3a0]">
+      <section className="rounded-3xl bg-amber-bg p-4 ring-1 ring-amber-ink/30">
         <h2 className="text-base font-semibold text-amber-ink">{t.demoTitle}</h2>
         <p className="mt-1 text-sm leading-relaxed text-amber-ink">{t.demoBody}</p>
         {mode === "demo" ? <p className="mt-2 text-sm font-semibold text-amber-ink">{t.demoOn}</p> : null}

@@ -138,7 +138,7 @@ npm run cf-typegen  # 產生 CloudflareEnv 型別
 - 回報與家屬：照顧者用自己的語言，家屬看繁體中文
 - 列印摘要：給門診用
 
-可安裝成 PWA（`npm run build && npm start` 後，用手機瀏覽器加到主畫面）。示範開發模式不註冊 service worker，避免快取干擾。
+可安裝成 PWA（`npm run build && npm start` 後，用手機瀏覽器加到主畫面）。manifest 含 `display: standalone`、theme-color，以及一般圖示、maskable 圖示和 apple-touch-icon。版面從 320px 手機到 1440px 桌面：寬螢幕的今天、回報、家屬頁分成兩欄，其餘頁面置中。底部導覽會讓出 iPhone 的 home indicator。`npm run responsive` 會用 Playwright 在 320×740、360×740、390×844、768×1024、1024×768、1440×900 檢查每個路由有沒有橫向溢出。示範開發模式不註冊 service worker，避免快取干擾。
 
 ## 限制
 

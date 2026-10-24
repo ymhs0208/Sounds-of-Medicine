@@ -33,9 +33,11 @@ export default function FamilyPage() {
         ) : null}
       </div>
       <AdherenceCard lang="zh" />
-      <Button nativeButton={false} className="h-12 w-full rounded-2xl text-base" render={<Link href="/family/print" />}>
+      <Button nativeButton={false} className="h-12 w-full rounded-2xl text-base sm:w-fit sm:min-w-48" render={<Link href="/family/print" />}>
         {t.print}
       </Button>
+      <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-8">
+      <div className="min-w-0 space-y-4">
       <DuplicateBanner lang="zh" />
       <section>
         <h2 className="mb-2 text-lg font-semibold">{t.medsZh}</h2>
@@ -46,8 +48,8 @@ export default function FamilyPage() {
             {store.bags.flatMap((bag) =>
               bag.drugs.map((drug) => (
                 <Link key={drug.id} href={drugPath(drug.id)} className="block rounded-2xl bg-card px-4 py-3 ring-1 ring-border">
-                  <div className="font-semibold">{drugText(drug, "zh").name}</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="font-semibold break-words">{drugText(drug, "zh").name}</div>
+                  <div className="text-sm break-words text-muted-foreground">
                     {bag.hospitalShort} · {drug.usageZh}
                   </div>
                 </Link>
@@ -56,6 +58,8 @@ export default function FamilyPage() {
           </div>
         )}
       </section>
+      </div>
+      <div className="mt-4 min-w-0 space-y-4 lg:mt-0">
       <section>
         <h2 className="mb-2 text-lg font-semibold">{t.familyFeed}</h2>
         {history.length === 0 ? (
@@ -100,9 +104,11 @@ export default function FamilyPage() {
         )}
       </section>
       <Disclaimer lang="zh" />
-      <Button nativeButton={false} variant="secondary" className="h-12 w-full rounded-2xl" render={<Link href="/today" />}>
+      <Button nativeButton={false} variant="secondary" className="h-12 w-full rounded-2xl sm:w-fit sm:min-w-48" render={<Link href="/today" />}>
         {t.backCare}
       </Button>
+      </div>
+      </div>
     </div>
   );
 }

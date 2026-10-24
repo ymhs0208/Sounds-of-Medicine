@@ -22,7 +22,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <RegisterServiceWorker />
       <DoseWatcher />
       <AppShell>{children}</AppShell>
-      <Toaster theme="light" position="top-center" richColors closeButton />
+      <Toaster position="top-center" richColors />
     </StoreProvider>
   );
 }

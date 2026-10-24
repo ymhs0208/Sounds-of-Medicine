@@ -4,8 +4,10 @@ import path from "node:path";
 
 const root = process.cwd();
 const apiDir = path.join(root, "app/api");
+const middlewareFile = path.join(root, "middleware.ts");
 const stashDir = path.join(root, ".static-stash");
 const stashedApi = path.join(stashDir, "api");
+const stashedMiddleware = path.join(stashDir, "middleware.ts");
 
 async function exists(target) {
   try {
@@ -35,20 +37,26 @@ function runNextBuild() {
   });
 }
 
-let moved = false;
+let movedApi = false;
+let movedMiddleware = false;
 try {
+  await rm(stashDir, { recursive: true, force: true });
+  await mkdir(stashDir, { recursive: true });
   if (await exists(apiDir)) {
-    await rm(stashDir, { recursive: true, force: true });
-    await mkdir(stashDir, { recursive: true });
     await rename(apiDir, stashedApi);
-    moved = true;
+    movedApi = true;
+  }
+  if (await exists(middlewareFile)) {
+    await rename(middlewareFile, stashedMiddleware);
+    movedMiddleware = true;
   }
   await runNextBuild();
   console.log("Static demo is in out/. Serve that folder from its root.");
 } finally {
-  if (moved) {
+  if (movedApi) {
     await rm(apiDir, { recursive: true, force: true });
     await rename(stashedApi, apiDir);
-    await rm(stashDir, { recursive: true, force: true });
   }
+  if (movedMiddleware) await rename(stashedMiddleware, middlewareFile);
+  await rm(stashDir, { recursive: true, force: true });
 }

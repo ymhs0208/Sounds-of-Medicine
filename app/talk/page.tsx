@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { features } from "@/lib/i18n/features";
 import { listenOnce, speechInputSupport } from "@/lib/listen";
 import { PHRASES, type Phrase } from "@/lib/phrases";
+import { paidPost } from "@/lib/paid-client";
 import { staticDemo } from "@/lib/routes";
 import { speak } from "@/lib/speech";
 import { useStore } from "@/lib/store";
@@ -26,13 +27,10 @@ export default function TalkPage() {
   async function toChinese(line: string): Promise<string> {
     if (store.lang === "zh" || staticDemo) return store.lang === "zh" ? line : "";
     try {
-      const response = await fetch("/api/translate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ language: "zh", from: store.lang, lines: [line] }),
-      });
-      const body = (await response.json()) as { lines?: string[]; error?: string };
-      if (!response.ok || !body.lines?.[0]) {
+      const response = await paidPost("/api/translate", { language: "zh", from: store.lang, lines: [line] }, store.lang);
+      const body = response.body as { lines?: string[]; message?: string };
+      if (response.status === 429 || response.status === 413) toast(body.message || t.talkNoKey);
+      if (response.status !== 200 || !body.lines?.[0]) {
         toast(t.talkNoKey);
         return "";
       }
@@ -95,13 +93,10 @@ export default function TalkPage() {
     let care = line;
     if (store.lang !== "zh" && !staticDemo) {
       try {
-        const response = await fetch("/api/translate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ language: store.lang, from: "zh", lines: [line] }),
-        });
-        const body = (await response.json()) as { lines?: string[] };
-        if (response.ok && body.lines?.[0]) care = body.lines[0];
+        const response = await paidPost("/api/translate", { language: store.lang, from: "zh", lines: [line] }, store.lang);
+        const body = response.body as { lines?: string[]; message?: string };
+        if (response.status === 429 || response.status === 413) toast(body.message || t.talkNoKey);
+        if (response.status === 200 && body.lines?.[0]) care = body.lines[0];
         else toast(t.talkNoKey);
       } catch {
         toast(t.talkNoKey);

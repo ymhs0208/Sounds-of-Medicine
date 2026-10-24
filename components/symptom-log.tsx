@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { AskLine } from "@/components/ask-line";
 import { Button } from "@/components/ui/button";
 import { features } from "@/lib/i18n/features";
+import { paidPost } from "@/lib/paid-client";
 import { staticDemo } from "@/lib/routes";
 import { useStore } from "@/lib/store";
 import type { SymptomKind } from "@/lib/types";
@@ -36,13 +37,10 @@ export function SymptomLog() {
     let noteZh = store.lang === "zh" ? note.trim() : "";
     if (store.lang !== "zh" && note.trim() && !staticDemo) {
       try {
-        const response = await fetch("/api/translate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ language: "zh", from: store.lang, lines: [note.trim()] }),
-        });
-        const body = (await response.json()) as { lines?: string[] };
-        if (response.ok && body.lines?.[0]) noteZh = body.lines[0];
+        const response = await paidPost("/api/translate", { language: "zh", from: store.lang, lines: [note.trim()] }, store.lang);
+        const body = response.body as { lines?: string[]; message?: string };
+        if (response.status === 429 || response.status === 413) toast(body.message || t.saved);
+        if (response.status === 200 && body.lines?.[0]) noteZh = body.lines[0];
       } catch {
         noteZh = "";
       }

@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { BagForm } from "@/components/bag-form";
 import { Disclaimer } from "@/components/disclaimer";
 import { ui } from "@/lib/i18n";
+import { paidPost } from "@/lib/paid-client";
 import { staticDemo } from "@/lib/routes";
 import { useStore } from "@/lib/store";
 import type { Bag, Lang } from "@/lib/types";
@@ -27,17 +28,17 @@ function EditForm() {
     }
     if (lines.every((line) => !line.trim())) return bag;
     try {
-      const response = await fetch("/api/translate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ language: lang, lines }),
-      });
+      const response = await paidPost("/api/translate", { language: lang, lines }, lang);
       if (response.status === 503) {
         toast(t.savedWithoutTranslation);
         return bag;
       }
-      if (!response.ok) return bag;
-      const body = (await response.json()) as { lines?: string[] };
+      if (response.status === 429 || response.status === 413) {
+        toast(typeof response.body.message === "string" ? response.body.message : t.savedWithoutTranslation);
+        return bag;
+      }
+      if (response.status !== 200) return bag;
+      const body = response.body as { lines?: string[] };
       if (!body.lines || body.lines.length !== lines.length) return bag;
       let cursor = 0;
       return {

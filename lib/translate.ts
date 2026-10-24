@@ -28,7 +28,7 @@ export async function translateLines(lines: string[], lang: Lang, from?: Lang): 
         Authorization: `Bearer ${key}`,
         "Content-Type": "application/json",
       },
-      signal: AbortSignal.timeout(45_000),
+      signal: AbortSignal.timeout(20_000),
       body: JSON.stringify({
         model,
         temperature: 0,

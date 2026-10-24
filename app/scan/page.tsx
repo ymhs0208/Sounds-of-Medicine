@@ -10,6 +10,7 @@ import { bagFromExtraction } from "@/lib/build-bag";
 import { DEMO_CAPTION, DEMO_ORDER, getDemoBag, type DemoKey } from "@/lib/demo-data";
 import { compressImage } from "@/lib/images";
 import { ui } from "@/lib/i18n";
+import { paidPost } from "@/lib/paid-client";
 import { setPending } from "@/lib/pending";
 import { staticDemo } from "@/lib/routes";
 import { useStore } from "@/lib/store";
@@ -50,19 +51,20 @@ export default function ScanPage() {
     setProblem(null);
     try {
       const imageDataUrl = await compressImage(file);
-      const response = await fetch("/api/extract", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageDataUrl, language: store.lang }),
-      });
-      const body = (await response.json()) as { error?: string; extraction?: Extraction };
+      const response = await paidPost("/api/extract", { imageDataUrl, language: store.lang }, store.lang);
+      const body = response.body as { error?: string; message?: string; extraction?: Extraction };
       if (body.error === "no_key" || response.status === 503) {
         setProblem("no_key");
         return;
       }
-      if (!response.ok || !body.extraction) {
+      if (response.status === 429 || response.status === 413 || response.status === 403) {
         setProblem("fail");
-        toast(body.error === "unreadable" ? t.unreadable : t.extractFail);
+        toast(body.message || t.extractFail);
+        return;
+      }
+      if (response.status !== 200 || !body.extraction) {
+        setProblem("fail");
+        toast(body.error === "unreadable" ? t.unreadable : body.message || t.extractFail);
         return;
       }
       const bag = bagFromExtraction(body.extraction, imageDataUrl, store.lang);

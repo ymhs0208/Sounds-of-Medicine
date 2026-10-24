@@ -80,7 +80,7 @@ export async function extractMedicineBag(imageDataUrl: string, lang: Lang): Prom
         Authorization: `Bearer ${key}`,
         "Content-Type": "application/json",
       },
-      signal: AbortSignal.timeout(45_000),
+      signal: AbortSignal.timeout(40_000),
       body: JSON.stringify({
         model,
         temperature: 0,

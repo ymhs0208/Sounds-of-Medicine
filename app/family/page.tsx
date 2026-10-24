@@ -36,6 +36,7 @@ export default function FamilyPage() {
       </div>
       <AdherenceCard lang="zh" />
       <FamilyShare lang="zh" />
+      <Link href="/circle" className="inline-flex min-h-11 items-center text-base font-semibold text-pine underline">照護圈</Link>
       <section>
         <h2 className="mb-2 text-lg font-semibold">{features.zh.visitSymptoms}</h2>
         {store.symptoms.length === 0 ? (

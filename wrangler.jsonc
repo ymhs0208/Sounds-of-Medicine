@@ -50,6 +50,18 @@
   //   { "name": "YAOSHENG_RATE_LIMIT", "namespace_id": "1001", "simple": { "limit": 20, "period": 60 } }
   // ],
   //
+  // Care-circle sync. Ciphertext only. Create the database with `npx wrangler d1 create yaosheng`,
+  // put the id below, uncomment, then `npx wrangler d1 migrations apply yaosheng --remote`.
+  // "vars": { "YAOSHENG_DB_ENABLED": "1" },
+  // "d1_databases": [
+  //   {
+  //     "binding": "YAOSHENG_DB",
+  //     "database_name": "yaosheng",
+  //     "database_id": "replace-with-database-id",
+  //     "migrations_dir": "migrations"
+  //   }
+  // ],
+  //
   // Web Push subscriptions. Values are a device id, clock times, language, and the push endpoint.
   // Drug names and patient names are not stored. Also set secrets VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT.
   // "vars": { "YAOSHENG_PUSH_ENABLED": "1" },

@@ -117,6 +117,8 @@ npm run cf-typegen  # 產生 CloudflareEnv 型別
 
 若部署把儀表板上的變數清掉，把部署指令改成 `npx wrangler deploy --keep-vars`。
 
+照護圈是選用的端到端加密同步，要 LINE 登入與 D1。沒有這些設定時，藥櫃仍只在手機上。步驟見 [LAUNCH.md](LAUNCH.md)。
+
 家屬短連結、付費介面的 KV 計數、Web Push 訂閱都是選用的。`wrangler.jsonc` 裡的 KV 與 Rate Limiting 維持註解，部署不會因為少 namespace 失敗。要啟用時建立資源、取消註解、把 id 填上再部署。沒有這些 binding 時，分享仍用加密連結，辨識仍有每個 isolate 的記憶體限流，App 開著時的提醒也還在。
 
 背景提醒的 VAPID 金鑰用 `node scripts/generate-vapid.mjs` 產生，只放進 Worker Secret。

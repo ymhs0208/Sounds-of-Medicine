@@ -55,6 +55,7 @@ type Store = AppData & {
   markRefillNotified: (notices: RefillNotice[]) => void;
   noteExport: () => void;
   snoozeBackup: (until: string) => void;
+  applyRemote: (next: AppData) => void;
   storageLocked: boolean;
 };
 
@@ -299,6 +300,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setData((current) => ({ ...current, backupSnoozeUntil: until }));
   }, []);
 
+  const applyRemote = useCallback((next: AppData) => {
+    setData(next);
+  }, []);
+
   const value = useMemo<Store>(
     () => ({
       ...data,
@@ -324,6 +329,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       markRefillNotified,
       noteExport,
       snoozeBackup,
+      applyRemote,
       storageLocked,
     }),
     [
@@ -350,6 +356,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       markRefillNotified,
       noteExport,
       snoozeBackup,
+      applyRemote,
       storageLocked,
     ],
   );

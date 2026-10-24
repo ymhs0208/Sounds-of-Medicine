@@ -37,6 +37,31 @@ Android Chrome、桌面 Chrome / Edge，以及 iOS 16.4 以上且已加入主畫
 
 兩者都沒有時，程式改走記憶體，路由不會因此壞掉。
 
+## 照護圈、LINE 登入與 D1（選用）
+
+沒有這些設定時，藥櫃仍只在手機上，部署不會失敗。同步畫面會寫雲端同步還沒打開。
+
+1. 到 [LINE Developers](https://developers.line.biz/) 建立一個 LINE Login channel。權限只開 `openid` 與 `profile`，不要預設讀取 email。
+2. Callback URL 填 `https://<worker-domain>/api/auth/line/callback`。本機預覽若要測登入，LINE 後台也要登記那個網址。
+3. 建立資料庫並套用遷移：
+
+```bash
+npx wrangler d1 create yaosheng
+npx wrangler d1 migrations apply yaosheng --remote
+```
+
+4. 在 `wrangler.jsonc` 取消 `YAOSHENG_DB` 那段註解，填上 `database_id`，並設 `YAOSHENG_DB_ENABLED` 為 `"1"`。`migrations_dir` 指到 `migrations/`。
+5. 設這些 Secret：
+
+| 名稱 | 用途 |
+| --- | --- |
+| `LINE_CHANNEL_ID` | LINE Login channel 的 Channel ID |
+| `LINE_CHANNEL_SECRET` | Channel secret |
+| `LINE_CALLBACK_URL` | 與後台完全相同的 `https://<worker-domain>/api/auth/line/callback` |
+| `SESSION_SECRET` | 自訂一長串隨機字，用來簽登入 cookie |
+
+金鑰只留在手機與復原碼。伺服器只存密文。刪除帳號會清掉該使用者的伺服器資料，以及只有他一個人的照護圈。
+
 ## 其他選用項目
 
 | 名稱 | 打開方式 |

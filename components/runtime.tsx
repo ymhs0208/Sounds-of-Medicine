@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { launch } from "@/lib/i18n/launch";
+import { loadVault } from "@/lib/circle-vault";
 import { deviceId, rememberTurnstile } from "@/lib/paid-client";
 import { scheduleTimes } from "@/lib/push-schedule";
 import { scrubErrorText } from "@/lib/scrub";
@@ -98,6 +99,7 @@ export function Runtime() {
           const subscription = await registration.pushManager.getSubscription();
           const json = subscription?.toJSON();
           if (!subscription || !json?.keys?.p256dh || !json.keys.auth) return;
+          const vault = await loadVault().catch(() => null);
           await fetch("/api/push/subscribe", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -107,6 +109,7 @@ export function Runtime() {
               p256dh: json.keys.p256dh,
               auth: json.keys.auth,
               lang: store.lang,
+              ...(vault?.circleId ? { circleId: vault.circleId } : {}),
               times,
               sent: {},
             }),

@@ -26,6 +26,7 @@ export async function POST(request: Request) {
   if (!(await verifyTurnstile(request, body.turnstileToken))) return errorResponse(request, 403, "turnstile", language);
   if (!checkImageDataUrl(body.imageDataUrl).ok) return errorResponse(request, 400, "bad_image", language);
 
+  // The photo is sent to the model for this request only. It is not logged or stored.
   const result = await extractMedicineBag(body.imageDataUrl, language);
   if (!result.ok) {
     if (result.error === "no_key") return NextResponse.json({ error: "no_key" }, { status: 503 });

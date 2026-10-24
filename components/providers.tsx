@@ -3,6 +3,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { AppShell } from "@/components/app-shell";
 import { DoseWatcher } from "@/components/dose-watcher";
+import { CircleProvider } from "@/components/circle-provider";
 import { Runtime } from "@/components/runtime";
 import { StoreProvider } from "@/lib/store";
 import { useEffect } from "react";
@@ -20,11 +21,13 @@ function DisplayMode() {
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <StoreProvider>
-      <DisplayMode />
-      <Runtime />
-      <DoseWatcher />
-      <AppShell>{children}</AppShell>
-      <Toaster position="top-center" richColors />
+      <CircleProvider>
+        <DisplayMode />
+        <Runtime />
+        <DoseWatcher />
+        <AppShell>{children}</AppShell>
+        <Toaster position="top-center" richColors />
+      </CircleProvider>
     </StoreProvider>
   );
 }

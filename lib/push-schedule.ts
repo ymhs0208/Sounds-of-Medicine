@@ -13,6 +13,8 @@ export type PushRecord = {
   times: string[];
   /** date a time was last sent, keyed by HH:MM. */
   sent: Record<string, string>;
+  /** Opaque care-circle id. Never a drug or patient name. */
+  circleId?: string;
 };
 
 export function scheduleTimes(slots: string[]): string[] {
@@ -40,6 +42,7 @@ export function parsePushRecord(raw: unknown): PushRecord | null {
     lang: value.lang,
     times: [...new Set(value.times)].slice(0, 12),
     sent: Object.fromEntries(Object.entries(sent).filter((entry) => ALLOWED_TIMES.has(entry[0]) && typeof entry[1] === "string")),
+    ...(typeof value.circleId === "string" && /^[A-Za-z0-9_-]{16,80}$/.test(value.circleId) ? { circleId: value.circleId } : {}),
   };
 }
 

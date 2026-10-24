@@ -8,12 +8,12 @@ export type PushSubscriptionKeys = {
 };
 
 const REMINDER: Record<Lang, { title: string; body: string }> = {
-  zh: { title: "藥聲提醒", body: "到了您設定的時間。請打開藥聲，依藥袋上的字查看。" },
-  id: { title: "Pengingat YaoSheng", body: "Waktunya sesuai yang Anda atur. Buka YaoSheng dan lihat tulisan pada kemasan." },
-  vi: { title: "Nhắc YaoSheng", body: "Đã đến giờ bạn đã đặt. Mở YaoSheng và xem chữ trên túi thuốc." },
-  fil: { title: "Paalala ng YaoSheng", body: "Oras na ng itinakda mo. Buksan ang YaoSheng at tingnan ang nakasulat sa supot." },
-  th: { title: "เตือนยาเสียง", body: "ถึงเวลาที่คุณตั้งไว้ เปิดยาเสียงแล้วดูตัวหนังสือบนซองยา" },
-  en: { title: "YaoSheng reminder", body: "It is a time you set. Open YaoSheng and read the words on the bag." },
+  zh: { title: "藥聲", body: "該吃藥了。請打開藥聲，依藥袋上的字查看。" },
+  id: { title: "YaoSheng", body: "Sudah waktunya minum obat. Buka YaoSheng dan lihat tulisan pada kemasan." },
+  vi: { title: "YaoSheng", body: "Đã đến giờ uống thuốc. Mở YaoSheng và xem chữ trên túi thuốc." },
+  fil: { title: "YaoSheng", body: "Oras na para inumin ang gamot. Buksan ang YaoSheng at tingnan ang nakasulat sa supot." },
+  th: { title: "ยาเสียง", body: "ถึงเวลาทานยาแล้ว เปิดยาเสียงแล้วดูตัวหนังสือบนซองยา" },
+  en: { title: "YaoSheng", body: "It is time for the medicine. Open YaoSheng and read the words on the bag." },
 };
 
 export function reminderText(lang: Lang): { title: string; body: string } {

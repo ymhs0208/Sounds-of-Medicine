@@ -20,6 +20,7 @@ import { cabinetMode } from "@/lib/doses";
 import { fill, formatDateTime } from "@/lib/format";
 import { ui } from "@/lib/i18n";
 import { features } from "@/lib/i18n/features";
+import { circleCopy } from "@/lib/i18n/circle";
 import { launch } from "@/lib/i18n/launch";
 import { notificationSupport, requestNotifications } from "@/lib/notify";
 import { staticDemo } from "@/lib/routes";
@@ -180,6 +181,13 @@ export default function SettingsPage() {
         <Button type="button" variant="outline" className="mt-2 h-12 w-full rounded-2xl" onClick={() => setOpen(true)}>
           {t.clear}
         </Button>
+      </section>
+      <section className="rounded-3xl bg-card p-4 ring-1 ring-border">
+        <h2 className="text-base font-semibold">{circleCopy[store.lang].title}</h2>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{circleCopy[store.lang].lead}</p>
+        <Link href="/circle" className="mt-3 inline-flex min-h-11 items-center text-base font-semibold text-pine underline">
+          {circleCopy[store.lang].settingsLink}
+        </Link>
       </section>
       <section className="rounded-3xl bg-card p-4 ring-1 ring-border">
         <h2 className="text-base font-semibold">{t.about}</h2>

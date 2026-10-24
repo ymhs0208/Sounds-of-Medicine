@@ -1,0 +1,143 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Camera, ImagePlus } from "lucide-react";
+import { toast } from "sonner";
+import { BagArtwork } from "@/components/bag-artwork";
+import { Button } from "@/components/ui/button";
+import { bagFromExtraction } from "@/lib/build-bag";
+import { DEMO_CAPTION, DEMO_ORDER, getDemoBag, type DemoKey } from "@/lib/demo-data";
+import { compressImage } from "@/lib/images";
+import { ui } from "@/lib/i18n";
+import { setPending } from "@/lib/pending";
+import { useStore } from "@/lib/store";
+import type { Extraction } from "@/lib/extraction";
+
+export default function ScanPage() {
+  const store = useStore();
+  const router = useRouter();
+  const t = ui[store.lang];
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [llm, setLlm] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/status")
+      .then((response) => response.json())
+      .then((body: { llm?: boolean }) => setLlm(Boolean(body.llm)))
+      .catch(() => setLlm(false));
+  }, []);
+
+  async function openSample(key: DemoKey) {
+    setBusy(key);
+    await new Promise((resolve) => setTimeout(resolve, 900));
+    setPending({ kind: "demo", key });
+    router.push(`/review?demo=${key}`);
+  }
+
+  async function onFile(file: File | undefined) {
+    if (!file) return;
+    setBusy("photo");
+    try {
+      const imageDataUrl = await compressImage(file);
+      const response = await fetch("/api/extract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageDataUrl, language: store.lang }),
+      });
+      const body = (await response.json()) as { error?: string; extraction?: Extraction };
+      if (body.error === "no_key" || response.status === 503) {
+        toast(t.noKey);
+        return;
+      }
+      if (!response.ok || !body.extraction) {
+        toast(body.error === "unreadable" ? t.unreadable : t.extractFail);
+        return;
+      }
+      const bag = bagFromExtraction(body.extraction, imageDataUrl, store.lang);
+      if (!bag.drugs.length && !bag.patientZh) {
+        toast(t.unreadable);
+        return;
+      }
+      setPending({ kind: "extract", bag });
+      router.push("/review");
+    } catch {
+      toast(t.photoUnsupported);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  return (
+    <div className="space-y-4 pb-6">
+      <div>
+        <p className="text-sm font-semibold text-pine">{llm ? t.llmMode : t.demoMode}</p>
+        <h1 className="text-3xl font-semibold">{t.scanTitle}</h1>
+        <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.scanLead}</p>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <Button type="button" className="h-14 rounded-2xl text-base" onClick={() => cameraRef.current?.click()}>
+          <Camera className="size-5" />
+          {t.photograph}
+        </Button>
+        <Button type="button" variant="outline" className="h-14 rounded-2xl text-base" onClick={() => fileRef.current?.click()}>
+          <ImagePlus className="size-5" />
+          {t.upload}
+        </Button>
+      </div>
+      <input
+        ref={cameraRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={(event) => onFile(event.target.files?.[0])}
+      />
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(event) => onFile(event.target.files?.[0])}
+      />
+      <h2 className="pt-2 text-sm font-semibold text-pine">{t.orSamples}</h2>
+      <div className="space-y-3">
+        {DEMO_ORDER.map((key) => {
+          const bag = getDemoBag(key);
+          const saved = store.bags.some((item) => item.demoKey === key);
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => openSample(key)}
+              className="w-full overflow-hidden rounded-3xl bg-card text-left ring-1 ring-border"
+            >
+              <div className="h-36 overflow-hidden">
+                <BagArtwork bag={bag} />
+              </div>
+              <div className="flex items-center justify-between px-4 py-3">
+                <div>
+                  <div className="text-base font-semibold">{bag.hospitalShort}</div>
+                  <div className="text-sm text-muted-foreground">{DEMO_CAPTION[key][store.lang]}</div>
+                </div>
+                <span className="text-xs font-semibold text-amber-ink">{saved ? t.alreadyInCabinet : t.sampleFictional}</span>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+      {busy ? (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-[#1c1915]/45 p-4">
+          <div className="w-full max-w-sm rounded-3xl bg-card p-5 text-center">
+            <div className="relative mx-auto h-36 overflow-hidden rounded-2xl bg-[#14261f]">
+              <div className="scanline absolute right-6 left-6 h-0.5 bg-[#b7f0cf]" />
+            </div>
+            <p className="mt-4 text-lg font-semibold">{t.reading}</p>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}

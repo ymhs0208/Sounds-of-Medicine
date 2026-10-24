@@ -1,0 +1,60 @@
+"use client";
+
+import Link from "next/link";
+import { DuplicateBanner } from "@/components/duplicate-banner";
+import { duplicateDrugIds } from "@/lib/duplicates";
+import { drugText, fill, patientName } from "@/lib/format";
+import { ui } from "@/lib/i18n";
+import { useStore } from "@/lib/store";
+
+export default function MedsPage() {
+  const store = useStore();
+  const t = ui[store.lang];
+  const dupes = duplicateDrugIds(store.bags);
+  const name = patientName(store.bags);
+
+  return (
+    <div className="space-y-4 pb-6">
+      <div>
+        <h1 className="text-3xl font-semibold">{t.medsTitle}</h1>
+        <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t.medsLead}</p>
+        {name ? <p className="mt-1 text-base font-semibold">{t.patientLabel}　{name}</p> : null}
+      </div>
+      <DuplicateBanner lang={store.lang} />
+      {store.bags.length === 0 ? (
+        <p className="rounded-3xl bg-card px-4 py-6 text-base ring-1 ring-border">{t.noMeds}</p>
+      ) : (
+        store.bags.map((bag) => (
+          <section key={bag.id} className="overflow-hidden rounded-3xl bg-card ring-1 ring-foreground/10">
+            <div className="px-4 py-3 text-white" style={{ background: bag.theme }}>
+              <div className="text-lg font-semibold">{bag.hospitalZh}</div>
+              <div className="text-sm text-white/80">
+                {bag.pharmacyZh} · {bag.dispensingLabel}
+              </div>
+            </div>
+            <div className="px-2 py-2">
+              <p className="px-2 text-sm text-muted-foreground">{fill(t.drugsCount, { n: String(bag.drugs.length) })}</p>
+              {bag.drugs.map((drug) => {
+                const text = drugText(drug, store.lang);
+                return (
+                  <Link key={drug.id} href={`/meds/${drug.id}`} className="block rounded-2xl px-2 py-3 hover:bg-secondary">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="text-lg font-semibold leading-tight">{text.name}</div>
+                        {store.lang !== "zh" ? <div className="text-sm text-[#3f382f]">{drug.nameZh}</div> : null}
+                        <div className="text-sm text-muted-foreground">{text.usage}</div>
+                      </div>
+                      {dupes.has(drug.id) ? (
+                        <span className="rounded-full bg-amber-bg px-2 py-1 text-xs font-semibold text-amber-ink">{t.duplicateShort}</span>
+                      ) : null}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        ))
+      )}
+    </div>
+  );
+}

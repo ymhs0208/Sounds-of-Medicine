@@ -13,7 +13,8 @@ import { EMPTY_DATA, parseBackup } from "./backup";
 import { CONSENT_VERSION, clearReadyCookie, writeReadyCookie } from "./consent";
 import { clearStored, loadStored, saveStored } from "./storage";
 import { allDemoBags } from "./demo-data";
-import { admitBag, applyDose } from "./doses";
+import { admitBag, applyDose, applyLineDoses } from "./doses";
+import type { DoseEvent } from "./line-events";
 import { uid } from "./id";
 import { todayISO } from "./format";
 import type {
@@ -42,6 +43,7 @@ type Store = AppData & {
   clearDemo: () => void;
   removeBag: (bagId: string) => void;
   setDose: (drugId: string, slot: Slot, status: DoseStatus | null, date?: string) => void;
+  applyLineDoses: (events: DoseEvent[]) => void;
   markNotified: (notices: DoseNotice[]) => void;
   addObservation: (input: { drugId: string; slot?: Slot; observation: Observation }) => void;
   addReply: (reportId: string, template: ReplyTemplate) => void;
@@ -183,6 +185,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     );
   }, []);
 
+  const applyRemoteDoses = useCallback((events: DoseEvent[]) => {
+    if (!events.length) return;
+    setData((current) => applyLineDoses(current, events));
+  }, []);
+
   const markNotified = useCallback((notices: DoseNotice[]) => {
     setData((current) => {
       const have = new Set(current.notified.map((notice) => `${notice.date}|${notice.drugId}|${notice.slot}`));
@@ -316,6 +323,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       clearDemo,
       removeBag,
       setDose,
+      applyLineDoses: applyRemoteDoses,
       markNotified,
       addObservation,
       addReply,
@@ -343,6 +351,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       clearDemo,
       removeBag,
       setDose,
+      applyRemoteDoses,
       markNotified,
       addObservation,
       addReply,

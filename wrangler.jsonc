@@ -69,6 +69,10 @@
   //   { "binding": "YAOSHENG_PUSH", "id": "replace-with-namespace-id" }
   // ],
   //
+  // LINE Official Account. These are secrets, not bindings, so a missing value does not fail deploy:
+  // LINE_MESSAGING_CHANNEL_SECRET, LINE_MESSAGING_ACCESS_TOKEN, LINE_LIFF_ID, LINE_DATA_KEY.
+  // The webhook is /api/line/webhook. LINE Notify is discontinued and is not used.
+  //
   // Turnstile is off until both secrets exist: TURNSTILE_SECRET_KEY and TURNSTILE_SITE_KEY.
   // Sentry is off until SENTRY_DSN is set. Analytics is off until CF_ANALYTICS_TOKEN is set.
   // None of those are bindings, so a missing secret does not fail deploy.

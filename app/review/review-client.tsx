@@ -23,6 +23,25 @@ export default function ReviewClient() {
   const [bag, setBag] = useState<Bag | null>(null);
 
   useEffect(() => {
+    const draft = params.get("draft");
+    if (draft) {
+      let tries = 0;
+      const timer = window.setInterval(() => {
+        tries += 1;
+        void fetch(`/api/line/draft?id=${encodeURIComponent(draft)}`)
+          .then(async (response) => {
+            if (!response.ok) {
+              if (tries > 8) window.clearInterval(timer);
+              return;
+            }
+            window.clearInterval(timer);
+            const body = (await response.json()) as { kind?: string; payload?: Bag };
+            if (body.kind === "bag" && body.payload?.drugs) setBag(body.payload);
+          })
+          .catch(() => undefined);
+      }, 700);
+      return () => window.clearInterval(timer);
+    }
     const demo = params.get("demo");
     const pending: Pending | null = demo && isDemoKey(demo) ? { kind: "demo", key: demo } : readPending();
     if (!pending) return;

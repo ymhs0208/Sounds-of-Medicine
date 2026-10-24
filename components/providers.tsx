@@ -4,6 +4,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { AppShell } from "@/components/app-shell";
 import { DoseWatcher } from "@/components/dose-watcher";
 import { CircleProvider } from "@/components/circle-provider";
+import { LineBridge } from "@/components/line-bridge";
+import { LiffLogin } from "@/components/liff-login";
 import { Runtime } from "@/components/runtime";
 import { StoreProvider } from "@/lib/store";
 import { useEffect } from "react";
@@ -23,6 +25,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <StoreProvider>
       <CircleProvider>
         <DisplayMode />
+        <LiffLogin />
+        <LineBridge />
         <Runtime />
         <DoseWatcher />
         <AppShell>{children}</AppShell>

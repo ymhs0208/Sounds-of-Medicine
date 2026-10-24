@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { shareOnLine } from "@/components/liff-login";
 import { circleInvite, recoveryCode } from "@/lib/circle-crypto";
 import { circleCopy } from "@/lib/i18n/circle";
+import { lineCopy } from "@/lib/i18n/line";
 import { formatDateTime } from "@/lib/format";
 import { useCircle } from "@/components/circle-provider";
 import { useStore } from "@/lib/store";
@@ -148,6 +150,14 @@ export function CircleScreen() {
             {qr ? <img className="mt-3 size-60 max-w-full" alt={t.qrAlt} src={qr} /> : null}
             <label className="mt-3 block text-sm font-semibold" htmlFor="circle-invite">{t.inviteLabel}</label>
             <input id="circle-invite" readOnly className="mt-1 w-full rounded-2xl border border-border bg-background px-3 py-3 text-sm break-all" value={invite} />
+            <p className="mt-3 text-sm leading-relaxed text-amber-ink">{lineCopy[store.lang].shareWarn}</p>
+            <button
+              type="button"
+              className="mt-2 min-h-12 rounded-2xl bg-[#06c755] px-4 font-semibold text-white"
+              onClick={() => void shareOnLine(`${lineCopy[store.lang].shareWarn}\n${invite}`)}
+            >
+              {lineCopy[store.lang].share}
+            </button>
           </div>
           {circle.notice === "rotated" ? <p className="mt-3 text-sm leading-relaxed">{t.rotated}</p> : null}
         </section>

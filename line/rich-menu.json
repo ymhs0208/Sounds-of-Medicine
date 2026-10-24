@@ -1,0 +1,28 @@
+{
+  "size": { "width": 2500, "height": 1686 },
+  "selected": true,
+  "name": "yaosheng",
+  "chatBarText": "藥聲",
+  "areas": [
+    {
+      "bounds": { "x": 0, "y": 0, "width": 2500, "height": 562 },
+      "action": { "type": "uri", "label": "今日", "uri": "https://liff.line.me/LIFF_ID/today" }
+    },
+    {
+      "bounds": { "x": 0, "y": 562, "width": 1250, "height": 562 },
+      "action": { "type": "uri", "label": "拍藥袋", "uri": "https://liff.line.me/LIFF_ID/scan" }
+    },
+    {
+      "bounds": { "x": 1250, "y": 562, "width": 1250, "height": 562 },
+      "action": { "type": "uri", "label": "溝通卡", "uri": "https://liff.line.me/LIFF_ID/talk" }
+    },
+    {
+      "bounds": { "x": 0, "y": 1124, "width": 1250, "height": 562 },
+      "action": { "type": "uri", "label": "家屬", "uri": "https://liff.line.me/LIFF_ID/family" }
+    },
+    {
+      "bounds": { "x": 1250, "y": 1124, "width": 1250, "height": 562 },
+      "action": { "type": "uri", "label": "設定", "uri": "https://liff.line.me/LIFF_ID/settings" }
+    }
+  ]
+}

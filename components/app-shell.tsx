@@ -126,9 +126,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     pathname.startsWith("/terms") ||
     pathname.startsWith("/disclaimer");
   const onboard = pathname === "/start";
+  const speak = pathname.startsWith("/line/speak");
 
   if (print) {
     return <div className="min-h-dvh bg-white text-[#1c1915]">{children}</div>;
+  }
+
+  if (speak) {
+    return <div className="min-h-dvh bg-background px-4 py-6">{children}</div>;
   }
 
   if (publicPage || onboard) {

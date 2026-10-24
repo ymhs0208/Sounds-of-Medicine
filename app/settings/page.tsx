@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { LineSettings } from "@/components/line-settings";
 import { PushPanel } from "@/components/push-panel";
 import { backupJson } from "@/lib/backup";
 import { cabinetMode } from "@/lib/doses";
@@ -99,6 +100,7 @@ export default function SettingsPage() {
         </Button>
       </section>
       <PushPanel />
+      <LineSettings />
       <section className="rounded-3xl bg-amber-bg p-4 ring-1 ring-amber-ink/30">
         <h2 className="text-base font-semibold text-amber-ink">{t.demoTitle}</h2>
         <p className="mt-1 text-sm leading-relaxed text-amber-ink">{t.demoBody}</p>

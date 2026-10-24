@@ -62,6 +62,33 @@ npx wrangler d1 migrations apply yaosheng --remote
 
 金鑰只留在手機與復原碼。伺服器只存密文。刪除帳號會清掉該使用者的伺服器資料，以及只有他一個人的照護圈。
 
+## LINE 官方帳號與 LIFF（選用）
+
+沒有這些 Secret 時，吃藥提醒仍走手機上的通知或 Web Push，部署不會失敗。官方帳號用 Messaging API。LINE Notify 已停止服務，不要用它。
+
+1. 在 [LINE Developers](https://developers.line.biz/) 建立一個 Provider。LINE Login channel 與 Messaging API channel 放在同一個 Provider，使用者代號才會相同。
+2. Messaging API channel 就是藥聲官方帳號。Webhook URL 填 `https://<domain>/api/line/webhook`。打開 Use webhook。回應用 reply token，不計入推播則數。
+3. 在同一個 Login channel 建立 LIFF。Endpoint URL 填 `https://<domain>`。Scope 開 `openid` 與 `profile`。LIFF ID 設成 `LINE_LIFF_ID`。
+4. 圖文選單：
+
+```bash
+LINE_LIFF_ID=你的LIFF LINE_MESSAGING_ACCESS_TOKEN=你的token node scripts/line-rich-menu.mjs
+```
+
+選單有 今日、拍藥袋、溝通卡、家屬、設定。圖示不帶藥名。
+5. 設這些 Secret：
+
+| 名稱 | 用途 |
+| --- | --- |
+| `LINE_MESSAGING_CHANNEL_SECRET` | 驗證 `X-Line-Signature` |
+| `LINE_MESSAGING_ACCESS_TOKEN` | 推播與回覆。長期 token |
+| `LINE_LIFF_ID` | LIFF。沒有時，App 仍可用，只是不會在 LINE 裡自動登入 |
+| `LINE_DATA_KEY` | 只有打開「詳細內容」時，用來把藥名加密後暫存。沒有這把金鑰就不能打開詳細內容 |
+
+照護圈的 D1 也要打開（見上一節）。Webhook 會確認每一則請求的 HMAC。預設推播是「該吃藥了」，沒有藥名。
+
+LINE 官方帳號免費方案的推播則數很少。上線前請看台灣目前的方案與價格。用 reply token 回覆的訊息不計入推播則數。
+
 ## 其他選用項目
 
 | 名稱 | 打開方式 |

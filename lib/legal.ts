@@ -57,6 +57,13 @@ const zh: Record<LegalKind, LegalDocument> = {
         ],
       },
       {
+        heading: "LINE 官方帳號",
+        paragraphs: [
+          "訊息會經過 LINE 的伺服器。預設推播只寫「該吃藥了」這類通用句子，沒有藥名或病名。建立照護圈的人可以另外打開詳細內容。打開之後，伺服器才用環境裡的 LINE_DATA_KEY 把藥名加密後暫存，以便寫進 LINE 訊息。沒有打開時，伺服器只存 LINE 使用者代號或群組代號、鐘點與語言，用來排程和送信。",
+          "您傳給官方帳號的藥袋照片只用於那一次辨識與翻譯，辨識完就丟棄，不會進藥櫃，除非您在 LIFF 裡再確認加入。翻譯暫存會加密，並在短時間內刪除。解除連結或刪除帳號會刪掉伺服器上的 LINE 代號。通知請詢問醫師或藥師，藥聲不是醫療建議。",
+        ],
+      },
+      {
         heading: "背景提醒",
         paragraphs: [
           "若您開啟背景提醒，伺服器只存一組裝置代號、推播位址、提醒的鐘點、通知語言，以及選用的照護圈代號。通知只寫「該吃藥了」這類通用句子，不存藥名、劑量或姓名。打開藥聲才看得到藥袋上的字。您可以隨時在設定裡關閉。",
@@ -128,6 +135,7 @@ const id: Record<LegalKind, LegalDocument> = {
     { heading: "Lingkaran dan enkripsi ujung ke ujung", paragraphs: ["Kunci AES-GCM dibuat di perangkat dan tidak pernah dikirim ke server. Orang lain bergabung lewat QR atau tautan; kunci ada di belakang #. Mengeluarkan anggota mengganti kunci dan mengenkripsi ulang. Jika semua perangkat dan kode pemulihan hilang, salinan awan tidak bisa dibuka."] },
     { heading: "Apa yang server lihat", paragraphs: ["Server hanya menyimpan ciphertext, id lingkaran, id anggota, versi, waktu, dan ukuran. Nama obat, dosis, foto, dan nama pasien tidak terlihat."] },
     { heading: "Login LINE", paragraphs: ["LINE hanya untuk sinkron awan. Yang disimpan adalah id pengguna LINE (sub) dan nama tampilan, bukan email kecuali Anda mengizinkan. Menghapus akun menghapus data server Anda dan lingkaran yang hanya Anda miliki."] },
+    { heading: "Akun resmi LINE", paragraphs: ["Pesan melewati server LINE. Pesan bawaan hanya “Waktunya minum obat”, tanpa nama obat atau penyakit. Jika pembuat lingkaran menyalakan isi terperinci, server mengenkripsi nama obat dengan LINE_DATA_KEY agar bisa ditulis di pesan. Tanpa itu, server hanya menyimpan id pengguna atau grup, jam, dan bahasa. Foto yang dikirim ke akun resmi diproses sekali lalu dibuang. Memutus tautan atau menghapus akun menghapus id LINE di server."] },
     { heading: "Pengingat latar", paragraphs: ["Jika Anda menyalakannya, server hanya menyimpan id perangkat, alamat push, jam, dan bahasa. Nama obat dan nama orang tidak disimpan."] },
     { heading: "Berbagi keluarga", paragraphs: ["Tautan dienkripsi di perangkat Anda. Kunci ada di belakang tanda #. Tautan pendek opsional hanya menyimpan ciphertext paling lama 30 hari."] },
     { heading: "Simpan dan hapus", paragraphs: ["Data di perangkat tetap ada sampai Anda menghapusnya. Anda dapat mengekspor JSON dan meminta 【待填】 menghapus data server jika ada."] },
@@ -151,6 +159,7 @@ const vi: Record<LegalKind, LegalDocument> = {
     { heading: "Nhóm và mã hóa đầu cuối", paragraphs: ["Khóa AES-GCM được tạo trên máy và không gửi lên máy chủ. Người khác tham gia bằng QR hoặc liên kết; khóa nằm sau dấu #. Xóa thành viên sẽ đổi khóa và mã hóa lại. Nếu mất mọi máy và mã khôi phục, bản trên đám mây không mở được."] },
     { heading: "Máy chủ thấy gì", paragraphs: ["Máy chủ chỉ giữ bản mã, mã nhóm, mã thành viên, phiên bản, thời gian và kích thước. Không thấy tên thuốc, liều, ảnh hay tên người được chăm sóc."] },
     { heading: "Đăng nhập LINE", paragraphs: ["LINE chỉ dùng để đồng bộ đám mây. Chúng tôi lưu mã người dùng LINE (sub) và tên hiển thị, không lấy email trừ khi bạn đồng ý. Xóa tài khoản sẽ xóa dữ liệu của bạn trên máy chủ và nhóm mà chỉ mình bạn sở hữu."] },
+    { heading: "Tài khoản LINE chính thức", paragraphs: ["Tin nhắn đi qua máy chủ LINE. Tin mặc định chỉ là “Đã đến giờ uống thuốc”, không có tên thuốc hay bệnh. Khi người tạo nhóm bật nội dung chi tiết, máy chủ mã hóa tên thuốc bằng LINE_DATA_KEY để đưa vào tin. Nếu không bật, máy chủ chỉ giữ mã người dùng hoặc nhóm, giờ và ngôn ngữ. Ảnh gửi cho tài khoản được xử lý một lần rồi xóa. Ngắt liên kết hoặc xóa tài khoản sẽ xóa mã LINE trên máy chủ."] },
     { heading: "Nhắc khi đóng ứng dụng", paragraphs: ["Nếu bạn bật, máy chủ chỉ lưu mã thiết bị, địa chỉ đẩy, giờ và ngôn ngữ. Không lưu tên thuốc hay tên người."] },
     { heading: "Chia sẻ cho gia đình", paragraphs: ["Liên kết được mã hóa trên máy bạn. Khóa nằm sau dấu #. Liên kết ngắn tùy chọn chỉ giữ bản mã tối đa 30 ngày."] },
     { heading: "Lưu và xóa", paragraphs: ["Dữ liệu trên máy ở lại đến khi bạn xóa. Bạn có thể xuất JSON và yêu cầu 【待填】 xóa dữ liệu trên máy chủ nếu có."] },
@@ -174,6 +183,7 @@ const fil: Record<LegalKind, LegalDocument> = {
     { heading: "Bilog at end-to-end na encryption", paragraphs: ["Ang AES-GCM na susi ay ginagawa sa aparato at hindi ipinapadala sa server. Sumasali ang iba sa pamamagitan ng QR o link; nasa likod ng # ang susi. Ang pag-alis ng kasapi ay nagpapalit ng susi. Kung mawala ang lahat ng aparato at ang recovery code, hindi mabubuksan ang kopya sa cloud."] },
     { heading: "Ano ang nakikita ng server", paragraphs: ["Ciphertext, id ng bilog, id ng kasapi, bersyon, oras, at laki lang. Hindi nakikita ang pangalan ng gamot, dose, litrato, o pangalan ng pasyente."] },
     { heading: "LINE login", paragraphs: ["Kailangan ang LINE para sa cloud sync lang. Iniimbak ang LINE user id (sub) at display name, hindi ang email maliban kung papayag ka. Ang pagbura ng account ay nagbubura ng datos mo sa server at ng bilog na ikaw lang ang may-ari."] },
+    { heading: "LINE Official Account", paragraphs: ["Dumadaan ang mensahe sa server ng LINE. Ang default ay “Oras na para inumin ang gamot” lang, walang pangalan ng gamot o sakit. Kapag binuksan ng gumawa ng bilog ang detalye, ine-encrypt ng server ang pangalan gamit ang LINE_DATA_KEY bago ilagay sa mensahe. Kung hindi, user id o group id, oras, at wika lang ang iniimbak. Ang litratong ipinadala sa account ay pinoproseso nang isang beses at itinatapon. Ang pag-unlink o pagbura ng account ay nagbubura ng LINE id sa server."] },
     { heading: "Paalala sa background", paragraphs: ["Kung bubuksan mo ito, id ng aparato, push address, oras, at wika lang ang iniimbak. Walang pangalan ng gamot o pasyente."] },
     { heading: "Share sa pamilya", paragraphs: ["Naka-encrypt ang link sa aparato mo. Nasa likod ng # ang susi. Ang opsyonal na maikling link ay ciphertext lang, hanggang 30 araw."] },
     { heading: "Tagal at pagbura", paragraphs: ["Mananatili ang datos sa aparato hanggang burahin mo. Maaari kang mag-export ng JSON at humiling sa 【待填】 na burahin ang datos sa server kung meron."] },
@@ -197,6 +207,7 @@ const th: Record<LegalKind, LegalDocument> = {
     { heading: "วงดูแลและการเข้ารหัสแบบต้นทางถึงปลายทาง", paragraphs: ["กุญแจ AES-GCM ถูกสร้างบนเครื่องและไม่ถูกส่งไปที่เซิร์ฟเวอร์ คนอื่นเข้าร่วมด้วย QR หรือลิงก์ กุญแจอยู่หลัง # การนำสมาชิกออกจะเปลี่ยนกุญแจและเข้ารหัสใหม่ ถ้าเครื่องทุกเครื่องและรหัสกู้คืนหายไป สำเนาบนคลาวด์จะเปิดไม่ได้"] },
     { heading: "เซิร์ฟเวอร์เห็นอะไร", paragraphs: ["เซิร์ฟเวอร์เก็บเฉพาะข้อความเข้ารหัส รหัสวง รหัสสมาชิก รุ่น เวลา และขนาด ไม่เห็นชื่อยา ขนาดยา รูป หรือชื่อผู้ได้รับการดูแล"] },
     { heading: "การเข้าสู่ระบบ LINE", paragraphs: ["LINE ใช้เพื่อซิงก์คลาวด์เท่านั้น เราเก็บบัญชีผู้ใช้ LINE (sub) และชื่อที่แสดง ไม่เก็บอีเมลเว้นแต่คุณยินยอม การลบบัญชีจะลบข้อมูลของคุณบนเซิร์ฟเวอร์และวงที่คุณเป็นเจ้าของคนเดียว"] },
+    { heading: "บัญชี LINE ทางการ", paragraphs: ["ข้อความผ่านเซิร์ฟเวอร์ของ LINE ค่าเริ่มต้นคือ “ถึงเวลาทานยาแล้ว” เท่านั้น ไม่มีชื่อยาหรือชื่อโรค ถ้าผู้สร้างวงเปิดเนื้อหาละเอียด เซิร์ฟเวอร์จะเข้ารหัสชื่อยาด้วย LINE_DATA_KEY ก่อนใส่ในข้อความ ถ้าไม่เปิด จะเก็บเฉพาะรหัสผู้ใช้หรือกลุ่ม เวลา และภาษา รูปที่ส่งให้บัญชีจะถูกประมวลผลครั้งเดียวแล้วทิ้ง การยกเลิกการเชื่อมหรือลบบัญชีจะลบรหัส LINE บนเซิร์ฟเวอร์"] },
     { heading: "การเตือนเบื้องหลัง", paragraphs: ["ถ้าคุณเปิด เซิร์ฟเวอร์เก็บเฉพาะรหัสเครื่อง ที่อยู่พุช เวลา และภาษา ไม่เก็บชื่อยาหรือชื่อคน"] },
     { heading: "แชร์ให้ครอบครัว", paragraphs: ["ลิงก์ถูกเข้ารหัสบนเครื่องคุณ กุญแจอยู่หลังเครื่องหมาย # ลิงก์สั้นที่เป็นตัวเลือกเก็บเฉพาะข้อความเข้ารหัส ไม่เกิน 30 วัน"] },
     { heading: "การเก็บและการลบ", paragraphs: ["ข้อมูลในเครื่องอยู่จนกว่าคุณจะลบ คุณส่งออก JSON ได้ และขอให้ 【待填】 ลบข้อมูลบนเซิร์ฟเวอร์ได้ถ้ามี"] },
@@ -220,6 +231,7 @@ const en: Record<LegalKind, LegalDocument> = {
     { heading: "Care circle and end-to-end encryption", paragraphs: ["The AES-GCM key is created on the device and is never sent to the server. Other people join with a QR code or a link; the key stays after #. Removing a member rotates the key and re-encrypts. If every device and the recovery code are lost, the cloud copy cannot be opened. YaoSheng does not keep a backup key. The app still works with no account and no network."] },
     { heading: "What the server can see", paragraphs: ["The server stores ciphertext, a circle id, member ids, a version, timestamps, and size. It cannot see drug names, doses, photos, the patient's name, or allergy text."] },
     { heading: "LINE Login", paragraphs: ["LINE Login is only for cloud sync. We store the LINE user id (sub) and display name. We do not read the email address unless you consent separately. Logout clears the session on this browser. Deleting the account deletes your server data and any circle you solely own."] },
+    { heading: "LINE Official Account", paragraphs: ["Messages pass through LINE's servers. The default push says only “It is time for the medicine”, with no drug or disease name. If the circle owner turns on detailed text, the server encrypts drug names with LINE_DATA_KEY and keeps that ciphertext so it can be placed in a LINE message. Otherwise the server stores a LINE user id or group id, clock times, and a language, which it needs to schedule and route. A bag photo sent to the official account is processed once and then discarded. Unlinking or deleting the account removes the LINE ids stored on the server."] },
     { heading: "Background reminders", paragraphs: ["If you opt in, the server stores a device id, the push endpoint, clock times, and the notification language. It does not store drug names or patient names."] },
     { heading: "Family share", paragraphs: ["The share link is encrypted on your device. The key stays after the # and is not sent to the server. An optional short link stores only ciphertext for up to 30 days."] },
     { heading: "Keeping and deleting", paragraphs: ["On-device data stays until you delete it. You can export JSON and ask 【待填】 to delete server data if any exists."] },
